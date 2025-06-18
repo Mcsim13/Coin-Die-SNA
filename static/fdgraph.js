@@ -1,0 +1,116 @@
+/* ISC License
+
+Copyright 2017–2023 Observable, Inc.
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+*/
+function fdGraph(
+    data
+) {
+    const width = 1000;
+    const height = 600;
+
+    const color = d3.scaleOrdinal(d3.schemeCategory10);
+
+    const links = data.edges.map(d => ({ ...d }));
+    const nodes = data.nodes.map(d => ({ ...d }));
+
+    const simulation = d3.forceSimulation(nodes)
+        .force("link", d3.forceLink(links).id(d => d.id).distance(d => 4 * 4 * 4))
+        .force("charge", d3.forceManyBody())
+        .force("center", d3.forceCenter(width / 2, height / 2))
+        .on("tick", ticked);
+
+    const svg = d3.create("svg")
+        .attr("width", "100%")
+        .attr("height", "100%")
+        .attr("viewBox", [0, 0, width, height])
+
+    const g = svg.append("g")
+        .attr("cursor", "grab");
+
+    const link = g.append("g")
+        .attr("stroke", "#999")
+        .attr("stroke-opacity", 0.6)
+        .selectAll()
+        .data(links)
+        .join("line")
+        .attr("stroke-width", d => Math.sqrt(d.value));
+
+    const node = g.append("g")
+        .selectAll("g")
+        .data(nodes)
+        .join("g")
+        .attr("id", d => d.id)
+
+    node.append("circle")
+        .attr("stroke", "#fff")
+        .attr("stroke-width", 1.5)
+        .attr("r", 5)
+        .attr("fill", d => color(d.group));
+
+    node.append("text")
+        .attr("fill", "white")
+        .attr("x", ({ index: i }) => /* (8 + G[i] * 2) */8)
+        .attr("y", "0.31em")
+        .text(d => d.id);
+
+    node.call(d3.drag()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended));
+
+    node.on("click", (e) => {
+        let id = e.currentTarget.id;
+        openInspector(id);
+    })
+
+    function ticked() {
+        link
+            .attr("x1", d => d.source.x)
+            .attr("y1", d => d.source.y)
+            .attr("x2", d => d.target.x)
+            .attr("y2", d => d.target.y);
+
+        node
+            .attr("cx", d => d.x)
+            .attr("cy", d => d.y)
+            .attr("transform", d => `translate( ` + d.x + `,` + d.y + `)`);
+    }
+
+    function dragstarted(event) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        event.subject.fx = event.subject.x;
+        event.subject.fy = event.subject.y;
+    }
+    function dragged(event) {
+        event.subject.fx = event.x;
+        event.subject.fy = event.y;
+    }
+    function dragended(event) {
+        if (!event.active) simulation.alphaTarget(0);
+        event.subject.fx = null;
+        event.subject.fy = null;
+    }
+
+    svg.call(d3.zoom()
+        //.extent([[0, 0], [width, height]])
+        .scaleExtent([0.01, 8])
+        .on("zoom", zoomed));
+
+    function zoomed({ transform }) {
+        g.attr("transform", transform)
+    }
+
+    return svg.node();
+}

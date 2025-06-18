@@ -1,0 +1,78 @@
+@import "sidebar.css";
+@import "buttons.css";
+
+body {
+    --main-accent-color: rgba(50, 114, 237, 1);
+    --background-color-medium: rgba(0, 0, 0, 0.4);
+    --background-color-weak: rgba(0, 0, 0, 0.2);
+    --background-lighten-medium: rgba(255, 255, 255, 0.3);
+    --background-lighten-weak: rgba(255, 255, 255, 0.1);
+    --primary-text-color: #EEEEEF;
+    --secondary-text-color: #BBBBBF;
+    --border-color: rgba(255, 255, 255, 0.15);
+    --shadow-color: rgba(0, 0, 0, 0.4);
+    --body-color: #202020;
+
+    &.white {
+        --main-accent-color: rgba(70, 137, 234, 1);
+        --background-color-medium: rgba(255, 255, 255, 0.4);
+        --background-color-weak: rgba(255, 255, 255, 0.2);
+        --background-lighten-medium: rgba(255, 255, 255, 0.5);
+        --background-lighten-weak: rgba(255, 255, 255, 0.3);
+        --primary-text-color: #11111F;
+        --secondary-text-color: #4C4C4F;
+        --border-color: rgba(0, 0, 0, 0.1);
+        --shadow-color: rgba(0, 0, 0, 0.1);
+        --body-color: #F0F0F0;
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    overscroll-behavior-y: none;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    background: var(--body-color);
+    color: var(--primary-text-color);
+    font-size: 14px;
+}
+
+p {
+    color: var(--secondary-text-color);
+    font-weight: 400;
+}
+
+span.secondary,
+label.secondary {
+    color: var(--secondary-text-color);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+    margin: 0;
+    font-weight: 500;
+}
+
+.line {
+    border-top: 1px solid var(--border-color);
+    margin: 0 32px;
+}
+
+.flex {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: stretch;
+}
