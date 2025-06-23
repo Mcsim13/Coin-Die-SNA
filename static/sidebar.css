@@ -60,5 +60,10 @@ div#inspector-header {
     flex-direction: row;
     gap: 24px;
     align-items: center;
+    justify-content: space-between;
     margin-bottom: 16px;
+}
+
+div#inspector-body {
+    overflow: scroll;
 }

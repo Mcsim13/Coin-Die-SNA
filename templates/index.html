@@ -13,66 +13,19 @@
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-    <script src="{{ url_for('static', filename='fdgraph.js') }}"></script>
-
-    <script>
-        $(() => {
-            let appearance = "dark";
-            $("button#appearance").on("click", () => {
-                if (appearance === "dark") {
-                    $("body").addClass("white");
-                    $("button#appearance").html("Dark mode");
-                    appearance = "light";
-                } else {
-                    $("body").removeClass("white");
-                    $("button#appearance").html("Light mode");
-                    appearance = "dark";
-                }
-            })
-
-            $("button.tab").on("click", (e) => {
-                $("button.tab").removeClass("active");
-                $(e.currentTarget).addClass("active");
-            })
-
-            $("#close-inspector").on("click", () => {
-                $("#inspector-container").hide();
-            })
-        });
-
-        let openInspector = (id) => {
-            $("#inspector-container").show();
-
-            $("#inspector-heading").html(id)
-        }
-
-        let getRequest = (url, query) => {
-            return new Promise((resolve, reject) => {
-                $.ajax({
-                    type: "GET",
-                    url: url,
-                    data: query,
-                }).done(function (data) {
-                    resolve(data);
-                })
-            })
-        }
-
-        $(async () => {
-            const graph_data = await getRequest("graphdata", {});
-            console.log(graph_data);
-
-            chart = fdGraph(graph_data);
-            $("#graph-container").html(chart);
-
-        });
-    </script>
+    <script type="module" src="{{ url_for('static', filename='main.js') }}"></script>
 </head>
 
 <body>
     <div>
-        <div>
+        <div id="main-pages">
             <div id="graph-container" style="height: 100vh; width: 100%; z-index: 1;"></div>
+            <div id="analysis-data-container" style="height: 100vh; width: 100%; z-index: 1; padding: 32px 32px 32px 250px; overflow: scroll; display: none;">
+                <h2 style="margin-bottom: 16px;">Analysis Data</h2>
+                <div id="analysis-list" class="list">
+
+                </div>
+            </div>
         </div>
 
         <div id="sidebar-container">
@@ -81,13 +34,13 @@
                     <div class="flex" style="flex-direction: column;">
                         <div id="sidebar-header">
                             <h1>Coin Die SNA</h1>
-                            <span class="secondary">Social Network Analysis</span>
+                            <span class="sec">Social Network Analysis</span>
                         </div>
                         <div id="tab-bar" class="flex">
-                            <button class="tab"><i class="fa-solid fa-circle-nodes"></i>Force Graph</button>
+                            <button class="tab active"><i class="fa-solid fa-circle-nodes"></i>Force Graph</button>
                             <button class="tab"><i class="fa-solid fa-map-location-dot"></i></i>Map View</button>
                             <button class="tab"><i class="fa-solid fa-chart-pie"></i>Statistics</button>
-                            <button class="tab"><i class="fa-solid fa-database"></i>Analysis Data</button>
+                            <button class="tab" id="analysis-data-btn"><i class="fa-solid fa-database"></i>Analysis Data</button>
                         </div>
                     </div>
                     <div>
@@ -106,7 +59,7 @@
                             <i class="fa-solid fa-xmark"></i>
                         </button>
                     </div>
-                    <div>
+                    <div id="inspector-body">
                         <button class="primary">Continue</button>
                     </div>
 

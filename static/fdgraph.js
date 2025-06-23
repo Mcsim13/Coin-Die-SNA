@@ -1,3 +1,4 @@
+import { openInspector } from "./main.js";
 /* ISC License
 
 Copyright 2017–2023 Observable, Inc.
@@ -114,3 +115,5 @@ function fdGraph(
 
     return svg.node();
 }
+
+export { fdGraph }

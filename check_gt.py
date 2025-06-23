@@ -2,6 +2,7 @@ import json
 import csv
 import collections
 from math import comb
+from sklearn.metrics import adjusted_rand_score
 
 
 def get_cluster_assignments_json(cluster_json):
@@ -110,15 +111,42 @@ def ari(c1, c2, elements):
     return ari
 
 
+def check_gt(cluster_pred, cluster_true):
+    intersect = list(set(cluster_pred) & set(cluster_true))
+    ri_score = ri(cluster_pred, cluster_true, intersect)
+    ari_score = ari(cluster_pred, cluster_true, intersect)
+
+    return ri_score, ari_score
+
+
+def check_gt_file(pred_file, coin_side):
+    cluster_imagecluster = get_cluster_assignments_json(pred_file)
+    cluster_gt_neuses = get_cluster_assignments_csv("Stempelliste_bueschel_Neuses_einfach.csv", side=coin_side)
+
+    return check_gt(cluster_imagecluster, cluster_gt_neuses)
+
+
 if __name__ == "__main__":
-    cluster_imagecluster = get_cluster_assignments_json("die_studie_reverse_6_projhdbscan.json")
-    cluster_gt_neuses = get_cluster_assignments_csv("Stempelliste_bueschel_Neuses_einfach.csv")
-    # print(cluster_imagecluster)
-    # print(cluster_gt_neuses)
-    intersect = list(set(cluster_imagecluster) & set(cluster_gt_neuses))
+    cluster_imagecluster_r = get_cluster_assignments_json("rsc/die_studie_reverse_7_projhdbscan_g.json")
+    cluster_imagecluster_a = get_cluster_assignments_json("rsc/die_studie_obverse_8_dissimhdbscan_g.json")
+    cluster_gt_neuses_r = get_cluster_assignments_csv("Stempelliste_bueschel_Neuses_einfach.csv", side="r")
+    cluster_gt_neuses_a = get_cluster_assignments_csv("Stempelliste_bueschel_Neuses_einfach.csv", side="a")
 
-    ri_test = ri(cluster_imagecluster, cluster_gt_neuses, intersect)
-    print("RI:", ri_test)
+    ri_r, ari_r = check_gt(cluster_imagecluster_r, cluster_gt_neuses_r)
+    ri_a, ari_a = check_gt(cluster_imagecluster_a, cluster_gt_neuses_a)
+    print("Reverse RI:", ri_r)
+    print("Reverse ARI:", ari_r)
+    print("Obverse RI:", ri_a)
+    print("Obverse ARI:", ari_a)
 
-    ari_test = ari(cluster_imagecluster, cluster_gt_neuses, intersect)
-    print("ARI:", ari_test)
+    intersect = list(set(cluster_imagecluster_r) & set(cluster_gt_neuses_r))
+    with open("neuses_matches.csv", "w", newline="") as matchfile:
+        writer = csv.writer(matchfile)
+        writer.writerow(["Id", "Av", "Rv"])
+        for coin in intersect:
+            writer.writerow([coin, cluster_imagecluster_a[coin],  cluster_imagecluster_r[coin]])
+
+    # ids = sorted(set(cluster_gt_neuses) & set(cluster_imagecluster))
+    # labels_true = [cluster_gt_neuses[cid] for cid in ids]
+    # labels_pred = [cluster_imagecluster[cid] for cid in ids]
+    # print(adjusted_rand_score(labels_true, labels_pred))

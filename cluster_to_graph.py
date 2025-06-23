@@ -42,7 +42,7 @@ def imagecluster_get_cluster(cluster_json):
 
 def map_clusters_to_findspots(clusters, coin_findspots):
     """
-    Returns { cluster_id: { finspot: [coin_id] } }
+    Returns { cluster_id: { findspot: [coin_id] } }
     clusters: { cluster_id : [coin_id] }
     coin_findspots: { coind_id: findspot }
     """
@@ -289,5 +289,5 @@ if __name__ == "__main__":
 
     # networkX_graph()
 
-    clusters = imagecluster_get_cluster("rsc/die_studie_obverse_8_projhdbscan.json")
+    clusters = imagecluster_get_cluster("rsc/die_studie_obverse_8_dissimhdbscan_g.json")
     plot_coint_per_die(clusters)
