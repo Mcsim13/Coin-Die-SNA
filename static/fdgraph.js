@@ -61,7 +61,7 @@ function fdGraph(
         .attr("fill", d => color(d.group));
 
     node.append("text")
-        .attr("fill", "white")
+        .attr("fill", "var(--primary-text-color)")
         .attr("x", ({ index: i }) => /* (8 + G[i] * 2) */8)
         .attr("y", "0.31em")
         .text(d => d.id);

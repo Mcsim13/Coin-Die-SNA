@@ -28,11 +28,11 @@ $(() => {
     $("button#appearance").on("click", () => {
         if (appearance === "dark") {
             $("body").addClass("white");
-            $("button#appearance").html("Dark mode");
+            $("button#appearance").html(`<i class="fa-regular fa-moon"></i>`);
             appearance = "light";
         } else {
             $("body").removeClass("white");
-            $("button#appearance").html("Light mode");
+            $("button#appearance").html(`<i class="fa-regular fa-sun"></i>`);
             appearance = "dark";
         }
     })
@@ -54,9 +54,11 @@ $(() => {
                                 <label>${analysis[0]}</label>
                                 <div class="flex" style="gap: 8px">
                                     <label class="sec">RI</label>
-                                    <label>${Math.round(analysis[1] * 100) / 100}</label>
+                                    <label style="width: 30px">${Math.round(analysis[1] * 100) / 100}</label>
                                     <label class="sec">ARI</label>
-                                    <label>${Math.round(analysis[2] * 100) / 100}</label>
+                                    <label style="color: hsl(${((analysis[2])*128)}, 100%, 40%); width: 30px">${Math.round(analysis[2] * 100) / 100}</label>
+                                    <label class="sec">AMI</label>
+                                    <label style="color: hsl(${((analysis[4])*128)}, 100%, 40%); width: 30px">${Math.round(analysis[4] * 100) / 100}</label>
                                     <label><input type="radio" name="dataset-obverse" value="${analysis[0]}" ${analysis[3] === "a" ? "checked" : ""}>Av</label>
                                     <label><input type="radio" name="dataset-reverse" value="${analysis[0]}" ${analysis[3] === "r" ? "checked" : ""}>Rv</label>
                                 </div>
@@ -69,8 +71,8 @@ $(() => {
     })
 
     $("#analysis-list").on("change", "input", (e) => {
-        key = e.currentTarget.name;
-        value = e.currentTarget.value;
+        let key = e.currentTarget.name;
+        let value = e.currentTarget.value;
         postRequest("configset", JSON.stringify({ key: key, value: value }));
     })
 

@@ -39,9 +39,19 @@ button.plain {
 button.tab {
     background: none;
     color: var(--primary-text-color);
-    border: none;
-    border-radius: 8px;
+    border: 1px solid transparent;
+    border-radius: 16px;
     text-align: start;
+    transition: background 0.1s cubic-bezier(.24,.02,.14,.98);
+    
+    &:hover {
+        background: var(--background-lighten-weak);
+    }
+    
+    &:active {
+        transform: scale(1.1);
+        transition: transform 0.1s cubic-bezier(.24,.02,.14,.98);
+    }
 
     &>i {
         margin-right: 8px;
@@ -52,8 +62,15 @@ button.tab {
 button.tab.active {
     background: var(--main-accent-color);
     color: white;
+    border: 1px solid var(--border-color);
+    animation: spring 0.4s cubic-bezier(.24,.02,.14,.98);
 
     &>i {
         color: white;
     }
+}
+
+@keyframes spring {
+    0%   { transform: scale(1.1); }
+    100% { transform: scale(1); }
 }

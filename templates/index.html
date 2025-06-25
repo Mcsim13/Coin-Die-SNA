@@ -20,7 +20,7 @@
     <div>
         <div id="main-pages">
             <div id="graph-container" style="height: 100vh; width: 100%; z-index: 1;"></div>
-            <div id="analysis-data-container" style="height: 100vh; width: 100%; z-index: 1; padding: 32px 32px 32px 250px; overflow: scroll; display: none;">
+            <div id="analysis-data-container" style="height: 100vh; width: 100%; z-index: 1; padding: 64px 32px 32px 32px; overflow: scroll; display: none;">
                 <h2 style="margin-bottom: 16px;">Analysis Data</h2>
                 <div id="analysis-list" class="list">
 
@@ -28,7 +28,24 @@
             </div>
         </div>
 
-        <div id="sidebar-container">
+        <div id="tabbar-container" class="flex">
+            <div id="tabbar-header">
+                <h2>Coin Die SNA</h2>
+            </div>
+            <div id="tabbar">
+                <div class="flex">
+                    <button class="tab active"><i class="fa-solid fa-circle-nodes"></i>Force Graph</button>
+                    <button class="tab"><i class="fa-solid fa-map-location-dot"></i></i>Map View</button>
+                    <button class="tab"><i class="fa-solid fa-chart-pie"></i>Statistics</button>
+                    <button class="tab" id="analysis-data-btn"><i class="fa-solid fa-database"></i>Die Data</button>
+                    <div>
+                        <button class="plain" id="appearance" style="width: 32px; padding: 6px"><i class="fa-regular fa-sun"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="sidebar-container" style="display: none;">
             <div id="sidebar">
                 <div class="flex">
                     <div class="flex" style="flex-direction: column;">
@@ -36,7 +53,7 @@
                             <h1>Coin Die SNA</h1>
                             <span class="sec">Social Network Analysis</span>
                         </div>
-                        <div id="tab-bar" class="flex">
+                        <div id="nav-list" class="flex">
                             <button class="tab active"><i class="fa-solid fa-circle-nodes"></i>Force Graph</button>
                             <button class="tab"><i class="fa-solid fa-map-location-dot"></i></i>Map View</button>
                             <button class="tab"><i class="fa-solid fa-chart-pie"></i>Statistics</button>
@@ -44,7 +61,7 @@
                         </div>
                     </div>
                     <div>
-                        <button class="plain" id="appearance">Light mode</button>
+                        <button class="plain" id="appearance"><i class="fa-regular fa-sun"></i></button>
                     </div>
                 </div>
             </div>

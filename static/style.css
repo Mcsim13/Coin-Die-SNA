@@ -92,6 +92,7 @@ h5 {
 
 .list-item {
     justify-content: space-between;
+    flex-wrap: wrap;
     padding: 6px 12px;
     border-bottom: 1px solid var(--border-color);
 

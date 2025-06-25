@@ -27,8 +27,35 @@ div#sidebar-header {
     margin-bottom: 16px;
 }
 
-div#tab-bar {
+div#nav-list {
     flex-direction: column;
+}
+
+
+div#tabbar-container {
+    position: absolute;
+    top: 0;
+    z-index: 100;
+    padding: 8px;
+    align-items: center;
+    gap: 16px;
+}
+
+div#tabbar {
+    border-radius: 20px;
+    background: var(--background-color-medium);
+    backdrop-filter: blur(8px) saturate(120%);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 0 16px 0 var(--shadow-color);
+
+    &>div {
+        padding: 4px;
+        gap: 4px;
+    }
+}
+
+div#tabbar-header {
+    margin-left: 8px;
 }
 
 

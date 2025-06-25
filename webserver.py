@@ -28,14 +28,14 @@ def analysislist_api():
     config = get_config()
     for path, name in analysis_files():
         side = "r" if ("reverse" in name) else "a"
-        ri, ari = check_gt_file(path, side)
+        ri, ari, ami = check_gt_file(path, side)
         selected = ""
         if config["dataset-reverse"] == name:
             selected = "r"
         if config["dataset-obverse"] == name:
             selected = "a"
 
-        analysis_list.append((name, ri, ari, selected))
+        analysis_list.append((name, ri, ari, selected, ami))
 
     json_data = jsonify(analysis_list)
     return json_data

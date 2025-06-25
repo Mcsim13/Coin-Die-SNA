@@ -2,7 +2,7 @@ import json
 import csv
 import collections
 from math import comb
-from sklearn.metrics import adjusted_rand_score
+from sklearn.metrics import adjusted_rand_score, adjusted_mutual_info_score
 
 
 def get_cluster_assignments_json(cluster_json):
@@ -116,7 +116,12 @@ def check_gt(cluster_pred, cluster_true):
     ri_score = ri(cluster_pred, cluster_true, intersect)
     ari_score = ari(cluster_pred, cluster_true, intersect)
 
-    return ri_score, ari_score
+    ids = sorted(set(cluster_true) & set(cluster_pred))
+    labels_true = [cluster_true[cid] for cid in ids]
+    labels_pred = [cluster_pred[cid] for cid in ids]
+    ami_score = adjusted_mutual_info_score(labels_true, labels_pred)
+
+    return ri_score, ari_score, ami_score
 
 
 def check_gt_file(pred_file, coin_side):
@@ -127,13 +132,13 @@ def check_gt_file(pred_file, coin_side):
 
 
 if __name__ == "__main__":
-    cluster_imagecluster_r = get_cluster_assignments_json("rsc/die_studie_reverse_7_projhdbscan_g.json")
-    cluster_imagecluster_a = get_cluster_assignments_json("rsc/die_studie_obverse_8_dissimhdbscan_g.json")
+    cluster_imagecluster_r = get_cluster_assignments_json("rsc/die_studie_reverse_10_projhdbscan.json")
+    cluster_imagecluster_a = get_cluster_assignments_json("rsc/die_studie_obverse_12_aglp.json")
     cluster_gt_neuses_r = get_cluster_assignments_csv("Stempelliste_bueschel_Neuses_einfach.csv", side="r")
     cluster_gt_neuses_a = get_cluster_assignments_csv("Stempelliste_bueschel_Neuses_einfach.csv", side="a")
 
-    ri_r, ari_r = check_gt(cluster_imagecluster_r, cluster_gt_neuses_r)
-    ri_a, ari_a = check_gt(cluster_imagecluster_a, cluster_gt_neuses_a)
+    ri_r, ari_r, ami_r = check_gt(cluster_imagecluster_r, cluster_gt_neuses_r)
+    ri_a, ari_a, ami_a = check_gt(cluster_imagecluster_a, cluster_gt_neuses_a)
     print("Reverse RI:", ri_r)
     print("Reverse ARI:", ari_r)
     print("Obverse RI:", ri_a)
@@ -146,7 +151,8 @@ if __name__ == "__main__":
         for coin in intersect:
             writer.writerow([coin, cluster_imagecluster_a[coin],  cluster_imagecluster_r[coin]])
 
-    # ids = sorted(set(cluster_gt_neuses) & set(cluster_imagecluster))
-    # labels_true = [cluster_gt_neuses[cid] for cid in ids]
-    # labels_pred = [cluster_imagecluster[cid] for cid in ids]
+    # ids = sorted(set(cluster_gt_neuses_r) & set(cluster_imagecluster_r))
+    # labels_true = [cluster_gt_neuses_r[cid] for cid in ids]
+    # labels_pred = [cluster_imagecluster_r[cid] for cid in ids]
+    # print(adjusted_mutual_info_score(labels_true, labels_pred))
     # print(adjusted_rand_score(labels_true, labels_pred))
