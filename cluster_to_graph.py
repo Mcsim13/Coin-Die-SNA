@@ -1,7 +1,10 @@
 import json
 import csv
 import networkx as nx
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import io
 
 
 def get_findspots():
@@ -66,120 +69,7 @@ def connect_nodes_pairwise(node_list, name_prefix=""):
     return edges
 
 
-def imagecluster_to_gephi_graph_reduced(node_csv, edge_csv):
-    """
-    OLD
-    Nodes = Cluster at Findspot
-    Edges = Nodes with same cluster
-    """
-    clusters = imagecluster_get_cluster("cluster_result_rueckseite.json")
-    coin_findspots = get_coin_findspots()
-
-    # Nodes
-    clusters_at_findspot = map_clusters_to_findspots(clusters, coin_findspots)
-
-    print(len(clusters_at_findspot), "Clusters")
-
-    # Write Nodes
-    nodes = []
-    with open(node_csv, "w", newline="") as node_file:
-        writer = csv.writer(node_file)
-        writer.writerow(["Id", "Cluster", "Findspot", "CoinCout", "Coins"])
-
-        for cluster, coin_findspots in clusters_at_findspot.items():
-            for fs, coins in coin_findspots.items():
-                node = [cluster + "_" + fs, cluster, fs, len(coins), coins]
-                nodes.append(node)
-                writer.writerow(node)
-
-    # Edges
-    edges = []
-    for cluster, coin_findspots in clusters_at_findspot.items():
-        findspots = list(coin_findspots.keys())
-        edges.extend(connect_nodes_pairwise(findspots, name_prefix=cluster))
-
-    print(len(edges), "Edges")
-
-    # Write Edges
-    with open(edge_csv, "w", newline="") as edge_file:
-        writer = csv.writer(edge_file)
-        writer.writerow(["Source", "Target", "Type"])
-
-        for edge in edges:
-            writer.writerow([edge[0], edge[1], "Undirected"])
-
-    return clusters_at_findspot, nodes, edges
-
-
-def findspot_edges_gephi(findspot_nodes, findspot_edges_csv):
-    """
-    OLD
-    Edges = Same findspot
-    """
-    # nodes_flat = [node[0] for node in findspot_nodes]
-    edges = []
-    for i in range(len(findspot_nodes)):
-        for k in range(i + 1, len(findspot_nodes)):
-            if findspot_nodes[i][2] == findspot_nodes[k][2]:
-                edges.append((findspot_nodes[i][0], findspot_nodes[k][0]))
-
-    print(len(edges), "Findspot Edges")
-
-    # Write Edges
-    with open(findspot_edges_csv, "w", newline="") as edge_file:
-        writer = csv.writer(edge_file)
-        writer.writerow(["Source", "Target", "Type", "Label"])
-
-        for edge in edges:
-            writer.writerow([edge[0], edge[1], "Undirected", "findspot"])
-
-
-def imagecluster_to_gephi_graph(cluster_json, node_csv, edge_csv):
-    """
-    OLD
-    Nodes = Coins
-    Edges = Same Cluster
-    """
-    with open(cluster_json, "r") as cluster_file:
-        cluster_raw = json.load(cluster_file)
-
-    # print(cluster_raw)
-
-    # Nodes
-    with open(node_csv, "w", newline="") as node_file:
-        writer = csv.writer(node_file)
-
-        writer.writerow(["Id", "Side"])
-
-        for coin, cluster in cluster_raw.items():
-            writer.writerow([coin.split("_")[0], coin.split("_")[1]])
-
-    # Edges
-    clusters = {}
-    for coin, cluster in cluster_raw.items():
-        clusters.setdefault(cluster, []).append(coin.split("_")[0])
-
-    print(len(clusters), "Cluster")
-
-    edges = []
-    for coins in clusters.values():
-        if len(coins) > 1:
-            for i in range(len(coins)):
-                for k in range(i + 1, len(coins)):
-                    edges.append((coins[i], coins[k]))
-
-    print(len(edges), "Edges")
-
-    with open(edge_csv, "w", newline="") as edge_file:
-        writer = csv.writer(edge_file)
-
-        writer.writerow(["Source", "Target", "Type"])
-
-        for edge in edges:
-            writer.writerow([edge[0], edge[1], "Undirected"])
-
-
-def construct_graph(cluster_file, node_csv, edge_csv):
+def construct_graph(cluster_file):
     """
     Nodes = Cluster, Findspots
     Edges = Coin of Cluster found at findspot
@@ -198,19 +88,13 @@ def construct_graph(cluster_file, node_csv, edge_csv):
 
     # Write Nodes
     nodes = []
-    with open(node_csv, "w", newline="") as node_file:
-        writer = csv.writer(node_file)
-        writer.writerow(["Id", "Type", "Label", "CoinCout", "Coins"])
+    for cluster, coins in clusters.items():
+        node = [cluster, "Cluster", cluster, len(coins), coins]
+        nodes.append(node)
 
-        for cluster, coins in clusters.items():
-            node = [cluster, "Cluster", cluster, len(coins), coins]
-            nodes.append(node)
-            writer.writerow(node)
-
-        for findspot, num_coins in findspots.items():
-            node = [findspot, "Findspot", findspot, num_coins, []]
-            nodes.append(node)
-            writer.writerow(node)
+    for findspot, num_coins in findspots.items():
+        node = [findspot, "Findspot", findspot, num_coins, []]
+        nodes.append(node)
 
     # Edges
     edges = []
@@ -221,21 +105,16 @@ def construct_graph(cluster_file, node_csv, edge_csv):
     # print(edges)
     print(len(edges), "Edges")
 
-    # Write Edges
-    with open(edge_csv, "w", newline="") as edge_file:
-        writer = csv.writer(edge_file)
-        writer.writerow(["Source", "Target", "Type", "Weight"])
-
-        for edge in edges:
-            writer.writerow([edge[0], edge[1], "Undirected", edge[2]])
-
     return nodes, edges
 
 
 def networkX_graph():
+    """
+    OLD
+    """
     G = nx.Graph()
 
-    nodes, edges = construct_graph("rsc/die_studie_reverse_7_projhdbscan.json", "graphlists/die_studie_reverse_nodes.csv", "graphlists/die_studie_reverse_edges.csv")
+    nodes, edges = construct_graph("rsc/die_studie_reverse_10_projhdbscan.json")
 
     node_names = [node[0] for node in nodes]
     edges_only = [edge[:2] for edge in edges]
@@ -269,25 +148,25 @@ def plot_coint_per_die(clusters):
     lengths = list(range(min_len, max_len + 1))
     counts = [length_counts.get(length, 0) for length in lengths]
 
+    plt.figure(figsize=(8, 4))
     plt.bar(lengths, counts)
     plt.xlabel("Coins per die")
     plt.ylabel("Count")
     plt.xticks(lengths)
     plt.grid(axis="y", linestyle="-", alpha=0.7)
     plt.tight_layout()
-    plt.show()
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format="svg")
+    plt.close()
+    buffer.seek(0)
+    return buffer
+    # plt.show()
 
 
 if __name__ == "__main__":
-    # imagecluster_to_gephi_graph("cluster_result_rueckseite.json", "imagecluster_reverse_nodes.csv", "imagecluster_reverse_edges.csv")
-
-    # clusters_at_findspot, nodes, edges = imagecluster_to_gephi_graph_reduced("imagecluster_reverse_nodes.csv", "imagecluster_reverse_edges.csv")
-    # findspot_edges_gephi(nodes, "imagecluster_reverse_findspot_edges.csv")
-    # -----------
-
     # construct_graph("rsc/die_studie_reverse_7_projhdbscan.json", "imagecluster_reverse_nodes.csv", "imagecluster_reverse_edges.csv")
 
     # networkX_graph()
 
-    clusters = imagecluster_get_cluster("rsc/die_studie_obverse_8_dissimhdbscan_g.json")
+    clusters = imagecluster_get_cluster("rsc/die_studie_reverse_10_projhdbscan.json")
     plot_coint_per_die(clusters)

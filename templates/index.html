@@ -21,7 +21,10 @@
         <div id="main-pages">
             <div id="graph-container" style="height: 100vh; width: 100%; z-index: 1;"></div>
             <div id="analysis-data-container" style="height: 100vh; width: 100%; z-index: 1; padding: 64px 32px 32px 32px; overflow: scroll; display: none;">
-                <h2 style="margin-bottom: 16px;">Analysis Data</h2>
+                <h2 style="margin-bottom: 8px;">Analysis Data</h2>
+                <p>
+                    Coin die data is expected to be in form of a json file containing coin id and die id (string or numeric) as key value pairs, e.g. {"coind2372": "die25", ...}. Select which one should be used as reverse and obverse.
+                </p>
                 <div id="analysis-list" class="list">
 
                 </div>
@@ -45,41 +48,20 @@
             </div>
         </div>
 
-        <div id="sidebar-container" style="display: none;">
-            <div id="sidebar">
-                <div class="flex">
-                    <div class="flex" style="flex-direction: column;">
-                        <div id="sidebar-header">
-                            <h1>Coin Die SNA</h1>
-                            <span class="sec">Social Network Analysis</span>
-                        </div>
-                        <div id="nav-list" class="flex">
-                            <button class="tab active"><i class="fa-solid fa-circle-nodes"></i>Force Graph</button>
-                            <button class="tab"><i class="fa-solid fa-map-location-dot"></i></i>Map View</button>
-                            <button class="tab"><i class="fa-solid fa-chart-pie"></i>Statistics</button>
-                            <button class="tab" id="analysis-data-btn"><i class="fa-solid fa-database"></i>Analysis Data</button>
-                        </div>
-                    </div>
-                    <div>
-                        <button class="plain" id="appearance"><i class="fa-regular fa-sun"></i></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div id="inspector-container" style="display: none;">
             <div id="inspector">
                 <div class="flex">
                     <div id="inspector-header" class="flex">
-                        <h3 id="inspector-heading">Inspector</h3>
+                        <h2 id="inspector-heading">Inspector</h2>
                         <button class="plain" id="close-inspector" style="padding: 6px; width: 32px; height: 32px;">
                             <i class="fa-solid fa-xmark"></i>
                         </button>
                     </div>
                     <div id="inspector-body">
-                        <button class="primary">Continue</button>
+                        <div id="coin-section"></div>
+                        <div><h3 style="margin: 8px 0">Image Matching</h3></div>
+                        <div id="inspector-comparison" style="margin-bottom: 16px;"></div>
                     </div>
-
                 </div>
             </div>
         </div>

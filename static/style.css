@@ -91,25 +91,44 @@ h5 {
 }
 
 .list-item {
-    justify-content: space-between;
-    flex-wrap: wrap;
     padding: 6px 12px;
     border-bottom: 1px solid var(--border-color);
-
+    
     &:hover {
         background: var(--background-lighten-weak);
     }
+    
+    &>div.flex {
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
 }
 
-div.coin-img-container {
+.coin-img-container {
     flex-direction: column;
     align-items: center;
+    border: 2px solid transparent;
+    border-radius: 24px;
+
+    &:has(input:checked) {
+        border: 2px solid var(--main-accent-color);
+        background: var(--background-lighten-weak);
+    }
+
+    &>input {
+        display: none;
+    }
 }
 
 img.coin-img {
     display: block;
     width: 120px;
     border-radius: 24px;
+}
+img.matching-img {
+    display: block;
+    width: 360px;
+    border-radius: 32px;
 }
 
 .grid {

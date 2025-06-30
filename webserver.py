@@ -1,9 +1,10 @@
-from flask import Flask, render_template, jsonify, request, send_file
+from flask import Flask, render_template, jsonify, request, send_file, Response
 import json
 import glob
 from check_gt import check_gt_file
 from main import analysis_files, get_config, set_config
-from cluster_to_graph import imagecluster_get_cluster, get_coin_findspots, map_clusters_to_findspots
+from cluster_to_graph import imagecluster_get_cluster, get_coin_findspots, map_clusters_to_findspots, plot_coint_per_die
+from matching_plot import get_matches_plot
 
 
 app = Flask(__name__)
@@ -78,5 +79,21 @@ def coinimg():
     return send_file(paths[0], mimetype="image/png")
 
 
+@app.route("/coinsperdiechart")
+def coinsperimg_chart():
+    analysis_file = request.args.get("file", "")
+    clusters = imagecluster_get_cluster("rsc/" + analysis_file)
+    buffer = plot_coint_per_die(clusters)
+    return send_file(buffer, mimetype="image/svg+xml")
+
+
+@app.route("/coinmatching")
+def coinmatching_img():
+    coin_id1 = request.args.get("coinid1", "")
+    coin_id2 = request.args.get("coinid2", "")
+    num_matches, img_matches = get_matches_plot(coin_id1, coin_id2)
+    return send_file(img_matches, mimetype="image/jpeg")
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port="5001", debug=True)

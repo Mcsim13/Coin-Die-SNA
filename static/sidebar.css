@@ -1,37 +1,4 @@
-div#sidebar-container {
-    position: absolute;
-    top: 0;
-    z-index: 99;
-    height: 100%;
-    padding: 8px;
-}
-
-div#sidebar {
-    height: 100%;
-    border-radius: 16px;
-    background: var(--background-color-medium);
-    backdrop-filter: blur(16px) saturate(100%);
-    border: 1px solid var(--border-color);
-    box-shadow: 0 0 16px 0 var(--shadow-color);
-
-    &>div {
-        padding: 12px 12px 12px 12px;
-        flex-direction: column;
-        justify-content: space-between;
-        height: 100%;
-    }
-}
-
-div#sidebar-header {
-    justify-content: space-between;
-    margin-bottom: 16px;
-}
-
-div#nav-list {
-    flex-direction: column;
-}
-
-
+/* Navigation Bar */
 div#tabbar-container {
     position: absolute;
     top: 0;
@@ -59,6 +26,7 @@ div#tabbar-header {
 }
 
 
+/* Inspector */
 div#inspector-container {
     position: absolute;
     top: 0;
