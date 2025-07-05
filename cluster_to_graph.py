@@ -1,5 +1,6 @@
 import json
 import csv
+from findspot_geolocation import get_findspot_coordinate
 import networkx as nx
 import matplotlib
 matplotlib.use("Agg")
@@ -163,10 +164,26 @@ def plot_coint_per_die(clusters):
     # plt.show()
 
 
+def findspot_coordinates(findspots):
+    fs_coordinates = dict()
+    for fs, _ in findspots.items():
+        coords = get_findspot_coordinate(fs)
+        fs_coordinates[fs] = coords
+
+    # print(fs_coordinates)
+    json_coords = json.dumps(fs_coordinates, indent=4)
+
+    with open("fs_coords.json", "w") as f:
+        f.write(json_coords)
+
+
 if __name__ == "__main__":
     # construct_graph("rsc/die_studie_reverse_7_projhdbscan.json", "imagecluster_reverse_nodes.csv", "imagecluster_reverse_edges.csv")
 
     # networkX_graph()
 
-    clusters = imagecluster_get_cluster("rsc/die_studie_reverse_10_projhdbscan.json")
-    plot_coint_per_die(clusters)
+    # clusters = imagecluster_get_cluster("rsc/die_studie_reverse_10_projhdbscan.json")
+    # plot_coint_per_die(clusters)
+
+    findspots = get_findspots()
+    findspot_coordinates(findspots)

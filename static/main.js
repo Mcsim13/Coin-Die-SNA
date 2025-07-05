@@ -1,5 +1,6 @@
 import { getRequest, postRequest } from "./utils.js"
 import { fdGraph } from "./fdgraph.js"
+import { initMap } from "./map.js"
 
 let openInspector = async (id) => {
     $("#inspector-container").show();
@@ -39,9 +40,9 @@ let openAnalysisDataPage = async () => {
                         <label class="sec">RI</label>
                         <label style="width: 30px">${Math.round(analysis[1] * 100) / 100}</label>
                         <label class="sec">ARI</label>
-                        <label style="color: hsl(${((analysis[2])*128)}, 100%, 40%); width: 30px">${Math.round(analysis[2] * 100) / 100}</label>
+                        <label style="color: hsl(${((analysis[2]) * 128)}, 100%, 40%); width: 30px">${Math.round(analysis[2] * 100) / 100}</label>
                         <label class="sec">AMI</label>
-                        <label style="color: hsl(${((analysis[4])*128)}, 100%, 40%); width: 30px">${Math.round(analysis[4] * 100) / 100}</label>
+                        <label style="color: hsl(${((analysis[4]) * 128)}, 100%, 40%); width: 30px">${Math.round(analysis[4] * 100) / 100}</label>
                         <label><input type="radio" name="dataset-obverse" value="${analysis[0]}" ${analysis[3] === "a" ? "checked" : ""}>Av</label>
                         <label><input type="radio" name="dataset-reverse" value="${analysis[0]}" ${analysis[3] === "r" ? "checked" : ""}>Rv</label>
                     </div>
@@ -52,6 +53,9 @@ let openAnalysisDataPage = async () => {
     }
 }
 
+/**
+ * Event Handler
+ */
 $(() => {
     $("button#appearance").on("click", () => {
         $("body").toggleClass("white");
@@ -65,6 +69,8 @@ $(() => {
         $("#main-pages").children().hide();
         if (e.currentTarget.id === "analysis-data-btn") {
             openAnalysisDataPage();
+        } else if (e.currentTarget.id === "map-graph-btn") {
+            $("#map-container").show();
         } else {
             $("#graph-container").show();
         }
@@ -106,12 +112,17 @@ $(() => {
     })
 })
 
+/**
+ * Start Script
+ */
 $(async () => {
     const graph_data = await getRequest("graphdata", {});
     console.log(graph_data);
 
     let chart = fdGraph(graph_data);
     $("#graph-container").html(chart);
+
+    initMap(graph_data);
 })
 
 export { openInspector }

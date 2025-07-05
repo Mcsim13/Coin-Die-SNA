@@ -95,5 +95,14 @@ def coinmatching_img():
     return send_file(img_matches, mimetype="image/jpeg")
 
 
+# Temp
+@app.route("/findspotcoords")
+def findspotcoords():
+    with open("fs_coords.json", "r") as f:
+        data = json.load(f)
+    coords_data = jsonify(data)
+    return coords_data
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port="5001", debug=True)

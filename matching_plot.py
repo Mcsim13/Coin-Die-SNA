@@ -25,6 +25,7 @@ from extract_features.xfeat_cache import XFeat
 def warp_corners_and_draw_matches(ref_points, dst_points, img1, img2):
     # Calculate the Homography matrix
     H, mask = cv2.findHomography(ref_points, dst_points, method=cv2.USAC_MAGSAC, ransacReprojThreshold=8)
+    score = mask.sum()
     mask = mask.flatten()
 
     # Get corners of the first image (image1)
@@ -48,6 +49,8 @@ def warp_corners_and_draw_matches(ref_points, dst_points, img1, img2):
 
     # Draw inlier matches
     img_matches = cv2.drawMatches(img1, keypoints1, img2_with_corners, keypoints2, matches, None, matchColor=(0, 255, 0), flags=2)
+
+    cv2.putText(img_matches, str(score), (w - 25, 50), cv2.FONT_HERSHEY_DUPLEX, 1.5, (237, 114, 50), 2)
 
     return img_matches
 

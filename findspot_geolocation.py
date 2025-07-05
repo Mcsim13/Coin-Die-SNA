@@ -40,9 +40,24 @@ def get_findspot_geojson(findspot):
 
 
 def get_findspot_coordinate(findspot):
-    geojson = get_findspot_geojson(findspot)
-    lat = geojson["features"][0]["geometry"]["coordinates"][0]
-    lon = geojson["features"][0]["geometry"]["coordinates"][1]
+    try:
+        geojson = get_findspot_geojson(findspot)
+        lat = geojson["features"][0]["geometry"]["coordinates"][1]
+        lon = geojson["features"][0]["geometry"]["coordinates"][0]
+        return (lat, lon)
+    except:
+        pass
+
+    findspot_alt = findspot.split(" ")[0]
+    try:
+        geojson = get_findspot_geojson(findspot_alt)
+        lat = geojson["features"][0]["geometry"]["coordinates"][1]
+        lon = geojson["features"][0]["geometry"]["coordinates"][0]
+        print("Found alternative:", findspot_alt, "| instead of:", findspot)
+        return (lat, lon)
+    except:
+        print("Not found:", findspot)
+        return (0, 0)
 
     return (lat, lon)
 

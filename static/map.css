@@ -1,0 +1,52 @@
+.leaflet-overlay-pane svg .node {
+    pointer-events: auto;
+    cursor: default;
+}
+
+.leaflet-overlay-pane svg .node text {
+    font-weight: 500;
+    stroke-width: 2;
+    stroke: var(--full-color);
+    paint-order: stroke fill;
+    fill: var(--primary-text-color);
+}
+
+div.leaflet-control-zoom.leaflet-bar.leaflet-control {
+    border: 1px solid var(--border-color);
+    background: var(--background-color-medium);
+    backdrop-filter: blur(4px) saturate(150%);
+    border-radius: 18px;
+    padding: 2px;
+
+    & a.leaflet-control-zoom-in,
+    a.leaflet-control-zoom-out {
+        color: var(--primary-text-color);
+        background: none;
+        border-bottom: 0;
+        border-radius: 16px;
+
+        &:hover {
+            background: var(--background-lighten-medium);
+        }
+
+        &>span {
+            vertical-align: super;
+            line-height: 1.2;
+        }
+    }
+}
+
+div.leaflet-control-scale-line,
+div.leaflet-control-attribution.leaflet-control {
+    background: var(--background-color-medium);
+    backdrop-filter: blur(4px) saturate(150%);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    color: var(--primary-text-color);
+    text-shadow: none;
+}
+
+div.leaflet-control-attribution.leaflet-control {
+    padding: 2px 4px;
+    margin: 5px;
+}

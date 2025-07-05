@@ -1,5 +1,6 @@
 @import "sidebar.css";
 @import "buttons.css";
+@import "map.css";
 
 body {
     --main-accent-color: rgba(50, 114, 237, 1);
@@ -12,18 +13,20 @@ body {
     --border-color: rgba(255, 255, 255, 0.15);
     --shadow-color: rgba(0, 0, 0, 0.4);
     --body-color: #202020;
+    --full-color: #000000;
 
     &.white {
         --main-accent-color: rgba(70, 137, 234, 1);
         --background-color-medium: rgba(255, 255, 255, 0.4);
         --background-color-weak: rgba(255, 255, 255, 0.2);
-        --background-lighten-medium: rgba(255, 255, 255, 0.5);
-        --background-lighten-weak: rgba(255, 255, 255, 0.3);
+        --background-lighten-medium: rgba(255, 255, 255, 0.6);
+        --background-lighten-weak: rgba(255, 255, 255, 0.4);
         --primary-text-color: #11111F;
         --secondary-text-color: #4C4C4F;
         --border-color: rgba(0, 0, 0, 0.1);
         --shadow-color: rgba(0, 0, 0, 0.1);
         --body-color: #F0F0F0;
+        --full-color: #FFFFFF;
     }
 }
 
@@ -80,7 +83,8 @@ h5 {
 }
 
 .list {
-    background: var(--background-color-weak);
+    background: var(--full-color);
+    /* background: var(--background-color-weak); */
     border: 1px solid var(--border-color);
     border-radius: 16px;
     overflow: hidden;

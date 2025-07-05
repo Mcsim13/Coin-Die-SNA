@@ -9,17 +9,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
         integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/2.0.0-alpha/leaflet.css" integrity="sha512-LPN9LDgfRWOAI5NzflmV0UmS9D2rz1/LVMX9uv1CJXmVopPOuoHtimoYHTI6XEfO0Ck2sUZzsv2/F7HroX5i6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/2.0.0-alpha/leaflet-global.js" integrity="sha512-hmPv7CCD+5RTbt5vJM/c+Myjwc26rnmEOsOoFT0Re9tcohWwR96Yg7k9fJnYkcEouCTDFLG44WouAqiLcHlk5Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <script type="module" src="{{ url_for('static', filename='main.js') }}"></script>
 </head>
 
-<body>
+<body class="white">
     <div>
         <div id="main-pages">
-            <div id="graph-container" style="height: 100vh; width: 100%; z-index: 1;"></div>
+            <div id="graph-container" style="height: 100vh; width: 100%; z-index: 1; display: none;"></div>
+            <div id="map-container" style="height: 100vh; width: 100%; z-index: 2;"></div>
             <div id="analysis-data-container" style="height: 100vh; width: 100%; z-index: 1; padding: 64px 32px 32px 32px; overflow: scroll; display: none;">
                 <h2 style="margin-bottom: 8px;">Analysis Data</h2>
                 <p>
@@ -37,12 +40,12 @@
             </div>
             <div id="tabbar">
                 <div class="flex">
-                    <button class="tab active"><i class="fa-solid fa-circle-nodes"></i>Force Graph</button>
-                    <button class="tab"><i class="fa-solid fa-map-location-dot"></i></i>Map View</button>
+                    <button class="tab" id="force-graph-btn"><i class="fa-solid fa-circle-nodes"></i>Force Graph</button>
+                    <button class="tab active" id="map-graph-btn"><i class="fa-solid fa-map-location-dot"></i></i>Map View</button>
                     <button class="tab"><i class="fa-solid fa-chart-pie"></i>Statistics</button>
                     <button class="tab" id="analysis-data-btn"><i class="fa-solid fa-database"></i>Die Data</button>
                     <div>
-                        <button class="plain" id="appearance" style="width: 32px; padding: 6px"><i class="fa-regular fa-sun"></i></button>
+                        <button class="plain" id="appearance" style="width: 32px; padding: 6px"><i class="fa-regular fa-moon"></i></button>
                     </div>
                 </div>
             </div>
