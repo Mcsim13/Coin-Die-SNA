@@ -1,6 +1,7 @@
 import json
 import csv
 from findspot_geolocation import get_findspot_coordinate
+from main import get_config
 import networkx as nx
 import matplotlib
 matplotlib.use("Agg")
@@ -9,13 +10,18 @@ import io
 
 
 def get_findspots():
-    """Returns { findspot: coin_count } dict"""
+    """Returns { findspot: (coin_count, type) } dict"""
     findspots = dict()
-    with open("bushel_series_DataChallenge_2025-numisdata4-2_TypenEinzeln.csv", "r") as numisdata_file:
+    with open("numisdata_bushel.csv", "r") as numisdata_file:
         _ = next(numisdata_file)
         numisdata = csv.reader(numisdata_file, delimiter=";")
         for row in numisdata:
-            findspots[row[13]] = findspots.get(row[13], 0) + 1
+            fs = row[13]
+            count = 1
+            if fs in findspots:
+                count = findspots[fs][0] + 1
+
+            findspots[fs] = (count, row[14])
 
     return findspots
 
@@ -23,7 +29,7 @@ def get_findspots():
 def get_coin_findspots():
     """Returns { coind_id: findspot } dict"""
     coin_findspots = {}
-    with open("bushel_series_DataChallenge_2025-numisdata4-2_TypenEinzeln.csv", "r") as numisdata_file:
+    with open("numisdata_bushel.csv", "r") as numisdata_file:
         _ = next(numisdata_file)
         numisdata = csv.reader(numisdata_file, delimiter=";")
         for row in numisdata:
@@ -32,14 +38,14 @@ def get_coin_findspots():
     return coin_findspots
 
 
-def imagecluster_get_cluster(cluster_json):
-    """Returns { cluster_id : [coin_id] } from { coin_id: cluster_id } input json"""
+def imagecluster_get_cluster(cluster_json, side):
+    """Returns { cluster_id_side : [coin_id] } from { coin_id: cluster_id } input json"""
     with open(cluster_json, "r") as cluster_file:
         cluster_raw = json.load(cluster_file)
 
     clusters = {}
     for coin, cluster in cluster_raw.items():
-        clusters.setdefault(cluster, []).append(coin.split("_")[0])
+        clusters.setdefault(cluster + "_" + side, []).append(coin)
 
     return clusters
 
@@ -70,40 +76,67 @@ def connect_nodes_pairwise(node_list, name_prefix=""):
     return edges
 
 
-def construct_graph(cluster_file):
+def construct_graph(cluster_file, side):
     """
     Nodes = Cluster, Findspots
     Edges = Coin of Cluster found at findspot
     """
-    clusters = imagecluster_get_cluster(cluster_file)
+    clusters = imagecluster_get_cluster(cluster_file, side)
     coin_findspots = get_coin_findspots()
     findspots = get_findspots()
+    findspot_coords = get_findspot_coordinates(findspots)
+    clusters_at_findspot = map_clusters_to_findspots(clusters, coin_findspots)
     # print(clusters)
     # print(coin_findspots)
     # print(findspots)
+    # print(clusters_at_findspot)
 
     # Nodes
-    clusters_at_findspot = map_clusters_to_findspots(clusters, coin_findspots)
-    # print(clusters_at_findspot)
-    print(len(clusters_at_findspot), "Clusters")
-
-    # Write Nodes
     nodes = []
     for cluster, coins in clusters.items():
-        node = [cluster, "Cluster", cluster, len(coins), coins]
+        node = (cluster, "Cluster", cluster, len(coins), tuple(coins), side)
         nodes.append(node)
 
-    for findspot, num_coins in findspots.items():
-        node = [findspot, "Findspot", findspot, num_coins, []]
+    for findspot, (num_coins, fs_type) in findspots.items():
+        node = (findspot, "Findspot", findspot, num_coins, (), findspot_coords[findspot], fs_type)
         nodes.append(node)
+
+    # print(nodes)
+    print(len(nodes), "Clusters")
 
     # Edges
     edges = []
     for cluster, coins_at_findspot in clusters_at_findspot.items():
         for findspot, coins in coins_at_findspot.items():
-            edges.append((cluster, findspot, len(coins)))
+            edge = (cluster, findspot, len(coins))
+            edges.append(edge)
 
     # print(edges)
+    print(len(edges), "Edges")
+
+    return nodes, edges
+
+
+def construct_graph_both_sides(cluster_file_r, cluster_file_a):
+    nodes_r, edges_r = construct_graph(cluster_file_r, "r")
+    nodes_a, edges_a = construct_graph(cluster_file_a, "a")
+
+    nodes = list(set(nodes_r) | set(nodes_a))
+    edges = list(set(edges_r) | set(edges_a))
+
+    # Connect reverse and obverse cluster
+    with open(cluster_file_r, "r") as cluster_file_r_json:
+        cluster_raw_r = json.load(cluster_file_r_json)
+    with open(cluster_file_a, "r") as cluster_file_a_json:
+        cluster_raw_a = json.load(cluster_file_a_json)
+
+    for coin_r, cluster_r in cluster_raw_r.items():
+        for coin_a, cluster_a in cluster_raw_a.items():
+            if coin_a == coin_r:
+                edge = (cluster_r + "_r", cluster_a + "_a", 1)
+                edges.append(edge)
+
+    print(len(nodes), "Clusters")
     print(len(edges), "Edges")
 
     return nodes, edges
@@ -115,7 +148,8 @@ def networkX_graph():
     """
     G = nx.Graph()
 
-    nodes, edges = construct_graph("rsc/die_studie_reverse_10_projhdbscan.json")
+    config = get_config()
+    nodes, edges = construct_graph_both_sides("rsc/" + config["dataset-reverse"], "rsc/" + config["dataset-obverse"])
 
     node_names = [node[0] for node in nodes]
     edges_only = [edge[:2] for edge in edges]
@@ -164,7 +198,10 @@ def plot_coint_per_die(clusters):
     # plt.show()
 
 
-def findspot_coordinates(findspots):
+def findspot_coordinates_write(findspots):
+    """
+    OLD
+    """
     fs_coordinates = dict()
     for fs, _ in findspots.items():
         coords = get_findspot_coordinate(fs)
@@ -177,13 +214,25 @@ def findspot_coordinates(findspots):
         f.write(json_coords)
 
 
+def get_findspot_coordinates(findspots):
+    """Returns { findspot: coordinate } dict"""
+    fs_coordinates = dict()
+    for fs, _ in findspots.items():
+        coords = get_findspot_coordinate(fs)
+        fs_coordinates[fs] = coords
+
+    return fs_coordinates
+
+
 if __name__ == "__main__":
-    # construct_graph("rsc/die_studie_reverse_7_projhdbscan.json", "imagecluster_reverse_nodes.csv", "imagecluster_reverse_edges.csv")
+    config = get_config()
+
+    # nodes, edges = construct_graph_both_sides("rsc/" + config["dataset-reverse"], "rsc/" + config["dataset-obverse"])
 
     # networkX_graph()
 
-    # clusters = imagecluster_get_cluster("rsc/die_studie_reverse_10_projhdbscan.json")
+    # clusters = imagecluster_get_cluster("rsc/" + config["dataset-reverse"], "r")
     # plot_coint_per_die(clusters)
 
-    findspots = get_findspots()
-    findspot_coordinates(findspots)
+    # findspots = get_findspots()
+    # findspot_coordinates_write(findspots)

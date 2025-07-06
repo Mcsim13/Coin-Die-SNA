@@ -62,7 +62,9 @@ def cluster_api():
     cluster_id = request.args.get("clusterId", "")
 
     config = get_config()
-    clusters = imagecluster_get_cluster("rsc/" + config["dataset-reverse"])
+    clusters_r = imagecluster_get_cluster("rsc/" + config["dataset-reverse"], "r")
+    clusters_a = imagecluster_get_cluster("rsc/" + config["dataset-obverse"], "a")
+    clusters = clusters_r | clusters_a
     coin_findspots = get_coin_findspots()
     clusters_at_findspot = map_clusters_to_findspots(clusters, coin_findspots)
 
@@ -72,9 +74,11 @@ def cluster_api():
 @app.route("/coinimg")
 def coinimg():
     coin_id = request.args.get("id", "")
+    side = request.args.get("side", "r")
 
     config = get_config()
-    pattern = config["images-reverse"] + "/*_" + coin_id + "_*"
+    folder = config["images-reverse"] if side == "r" else config["images-obverse"]
+    pattern = folder + "/*_" + coin_id + "_*"
     paths = glob.glob(pattern, recursive=False)
     return send_file(paths[0], mimetype="image/png")
 
@@ -82,7 +86,8 @@ def coinimg():
 @app.route("/coinsperdiechart")
 def coinsperimg_chart():
     analysis_file = request.args.get("file", "")
-    clusters = imagecluster_get_cluster("rsc/" + analysis_file)
+    side = "r" if ("reverse" in analysis_file) else "a"
+    clusters = imagecluster_get_cluster("rsc/" + analysis_file, side)
     buffer = plot_coint_per_die(clusters)
     return send_file(buffer, mimetype="image/svg+xml")
 
@@ -91,7 +96,8 @@ def coinsperimg_chart():
 def coinmatching_img():
     coin_id1 = request.args.get("coinid1", "")
     coin_id2 = request.args.get("coinid2", "")
-    num_matches, img_matches = get_matches_plot(coin_id1, coin_id2)
+    side = request.args.get("side", "r")
+    num_matches, img_matches = get_matches_plot(coin_id1, coin_id2, side)
     return send_file(img_matches, mimetype="image/jpeg")
 
 

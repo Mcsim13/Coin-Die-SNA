@@ -15,8 +15,8 @@ let openInspector = async (id) => {
         for (let coin of clusterData[fs]) {
             sectionHtml += /*html*/`
                         <label class="sec flex coin-img-container">
-                        <img class="coin-img" alt="${coin}" src="coinimg?id=${coin}">
-                        <input type="checkbox" value="${coin}" name="compare-coins">${coin}
+                        <img class="coin-img" alt="${coin}" src="coinimg?id=${coin}&side=${id.split("_")[1]}">
+                        <input type="checkbox" value="${coin}_${id.split("_")[1]}" name="compare-coins">${coin}
                         </label>
                     `;
         }
@@ -103,11 +103,13 @@ $(() => {
         }
         if (numChecked != 2) return;
 
-        let coinId1 = $("#coin-section input[type=checkbox]:checked")[0].value;
-        let coinId2 = $("#coin-section input[type=checkbox]:checked")[1].value;
-        $("#inspector-comparison").html(`
-            <img src="coinmatching?coinid1=${coinId1}&coinid2=${coinId2}" class="matching-img">
-            <img src="coinmatching?coinid1=${coinId2}&coinid2=${coinId1}" class="matching-img">
+        let coinId1 = $("#coin-section input[type=checkbox]:checked")[0].value.split("_")[0];
+        let coinId2 = $("#coin-section input[type=checkbox]:checked")[1].value.split("_")[0];
+        let side = $("#coin-section input[type=checkbox]:checked")[0].value.split("_")[1];
+        $("#inspector-comparison").html(/*html*/`
+            <img src="coinmatching?coinid1=${coinId1}&coinid2=${coinId2}&side=${side}" class="matching-img">
+            <br>
+            <img src="coinmatching?coinid1=${coinId2}&coinid2=${coinId1}&side=${side}" class="matching-img">
         `);
     })
 })

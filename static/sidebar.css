@@ -43,6 +43,7 @@ div#inspector-container {
 }
 
 div#inspector {
+    width: 400px;
     height: 100%;
     border-radius: 16px;
     background: var(--background-color-medium);
@@ -67,4 +68,12 @@ div#inspector-header {
 
 div#inspector-body {
     overflow: scroll;
+}
+
+div#inspector-comparison {
+    margin-bottom: 16px;
+    background: #000;
+    border-radius: 32px;
+    overflow: hidden;
+    padding: 8px;
 }

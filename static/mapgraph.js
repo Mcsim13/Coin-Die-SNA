@@ -21,29 +21,28 @@ function mapGraph(
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
     const links = data.edges.map(d => ({ ...d }));
-    const nodes = data.nodes.map(d => ({ ...d })).filter(d => !isNaN(d.id));
-    const fsNodes = data.nodes.map(d => ({ ...d })).filter(d => isNaN(d.id));
+    const nodes = data.nodes.map(d => ({ ...d })).filter(d => !isNaN(d.id.split("_")[0]));
+    const fsNodes = data.nodes.map(d => ({ ...d })).filter(d => isNaN(d.id.split("_")[0]));
+    
     fsNodes.forEach(node => {
         const layerPoint = map.latLngToLayerPoint(fsCoords[node.id]);
         node.fx = layerPoint.x;
         node.fy = layerPoint.y;
     })
-    console.log(nodes);
-    console.log(fsNodes);
 
     const simulation = d3.forceSimulation([...nodes, ...fsNodes])
         .force("link", d3.forceLink(links).id(d => d.id).distance(30))
         .force("charge", d3.forceManyBody().strength(-50))
         // .force("center", d3.forceCenter(width / 2, height / 2))
         .on("tick", ticked)
-        .alphaMin(0.01);
+        .alphaMin(0.02);
 
     
     const g = svg.select("g");
 
     const link = g.append("g")
         .attr("stroke", "#555")
-        .attr("stroke-opacity", 0.6)
+        /* .attr("stroke-opacity", 0.6) */
         .selectAll()
         .data(links)
         .join("line")
@@ -63,7 +62,7 @@ function mapGraph(
         .attr("fill", d => color(d.group));
 
     node.append("text")
-        .attr("fill", "var(--primary-text-color)")
+        .attr("font-size", "8px")
         .attr("x", ({ index: i }) => /* (8 + G[i] * 2) */8)
         .attr("y", "0.31em")
         .text(d => d.id);

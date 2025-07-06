@@ -55,15 +55,16 @@ def warp_corners_and_draw_matches(ref_points, dst_points, img1, img2):
     return img_matches
 
 
-def get_matches_plot(coin_id1, coin_id2):
+def get_matches_plot(coin_id1, coin_id2, side):
     start = timer()
     filtering = True
     top_k = 5000
     # path list of images
     config = get_config()
-    pattern = config["images-reverse"] + "/*_" + coin_id1 + "_*"
+    folder = config["images-reverse"] if side == "r" else config["images-obverse"]
+    pattern = folder + "/*_" + coin_id1 + "_*"
     file1 = glob.glob(pattern, recursive=False)[0]
-    pattern = config["images-reverse"] + "/*_" + coin_id2 + "_*"
+    pattern = folder + "/*_" + coin_id2 + "_*"
     file2 = glob.glob(pattern, recursive=False)[0]
     files = [file1, file2]
 
