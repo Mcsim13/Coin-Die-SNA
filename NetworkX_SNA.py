@@ -13,8 +13,12 @@ from main import get_config
 
 def shorten_edges(edge_list):
     two_values_edge = [(a, b) for (a, b, _) in edge_list]
+    pattern = re.compile(r"^\d{1,4}_[a-zA-Z]$")
+    # remove Edges where one of the nodes is '' (Ignoring Clusters or Cluster edges that have no findspot)
     filtered_two_value_edge = [(c, d) for (c, d) in two_values_edge if c != '' and d != '']
-    return filtered_two_value_edge
+    # only keep edges between a cluster and a place
+    relevant_edges = [(e, f) for (e, f) in filtered_two_value_edge if not (pattern.match(e) and pattern.match(f))]
+    return relevant_edges
 
 def create_graph(edge_list, remove_low_degree_clusters):
     network_graph = nx.Graph()
