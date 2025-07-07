@@ -227,7 +227,10 @@ def get_findspot_coordinates(findspots):
 if __name__ == "__main__":
     config = get_config()
 
-    # nodes, edges = construct_graph_both_sides("rsc/" + config["dataset-reverse"], "rsc/" + config["dataset-obverse"])
+    nodes, edges = construct_graph_both_sides("rsc/" + config["dataset-reverse"], "rsc/" + config["dataset-obverse"])
+
+    #print(nodes)
+    print(edges)
 
     # networkX_graph()
 
