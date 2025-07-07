@@ -13,7 +13,8 @@ from main import get_config
 
 def shorten_edges(edge_list):
     two_values_edge = [(a, b) for (a, b, _) in edge_list]
-    return two_values_edge
+    filtered_two_value_edge = [(c, d) for (c, d) in two_values_edge if c != '' and d != '']
+    return filtered_two_value_edge
 
 def create_graph(edge_list, remove_low_degree_clusters):
     network_graph = nx.Graph()
