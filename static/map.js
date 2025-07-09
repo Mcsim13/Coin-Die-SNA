@@ -1,8 +1,8 @@
 import { getRequest } from "./utils.js"
 import { mapGraph } from "./mapgraph.js"
 
-async function initMap(graphData) {
-    const map = new L.Map("map-container", { zoomControl: false, dragging: true }).setView([50.1167, 8.6499], 7);
+async function initMap(graphData, snaMetricsNode, snaMetricsEdge) {
+    const map = new L.Map("map-container", { zoomControl: false, dragging: true, zoomSnap: 0.05, zoomAnimation: false, fadeAnimation: false }).setView([50.1167, 8.6499], 7);
 
     const tiles = new L.TileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
@@ -23,7 +23,7 @@ async function initMap(graphData) {
     graphData.nodes = graphData.nodes.filter(d => d.id !== "");
     graphData.edges = graphData.edges.filter(d => d.source !== "" && d.target !== "");
 
-    let svgGraph = mapGraph(graphData, svg, map, findspotCoords);
+    let svgGraph = mapGraph(graphData, svg, map, findspotCoords, snaMetricsNode, snaMetricsEdge);
 }
 
 export { initMap }

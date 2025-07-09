@@ -125,7 +125,7 @@ def construct_graph_both_sides(cluster_file_r, cluster_file_a):
     edges = list(set(edges_r) | set(edges_a))
 
     # Connect reverse and obverse cluster
-    with open(cluster_file_r, "r") as cluster_file_r_json:
+    """ with open(cluster_file_r, "r") as cluster_file_r_json:
         cluster_raw_r = json.load(cluster_file_r_json)
     with open(cluster_file_a, "r") as cluster_file_a_json:
         cluster_raw_a = json.load(cluster_file_a_json)
@@ -134,7 +134,7 @@ def construct_graph_both_sides(cluster_file_r, cluster_file_a):
         for coin_a, cluster_a in cluster_raw_a.items():
             if coin_a == coin_r:
                 edge = (cluster_r + "_r", cluster_a + "_a", 1)
-                edges.append(edge)
+                edges.append(edge) """
 
     print(len(nodes), "Clusters")
     print(len(edges), "Edges")
@@ -229,8 +229,8 @@ if __name__ == "__main__":
 
     nodes, edges = construct_graph_both_sides("rsc/" + config["dataset-reverse"], "rsc/" + config["dataset-obverse"])
 
-    #print(nodes)
-    print(edges)
+    # print(nodes)
+    # print(edges)
 
     # networkX_graph()
 

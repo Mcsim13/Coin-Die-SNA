@@ -110,5 +110,21 @@ def findspotcoords():
     return coords_data
 
 
+@app.route("/snametricsnode")
+def snametrics_node():
+    with open("SNA_results/node_sna_metrics.json", "r") as f:
+        data = json.load(f)
+    node_sna = jsonify(data)
+    return node_sna
+
+
+@app.route("/snametricsedge")
+def snametrics_edge():
+    with open("SNA_results/edge_sna_metrics.json", "r") as f:
+        data = json.load(f)
+    edge_sna = jsonify(data)
+    return edge_sna
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port="5001", debug=True)

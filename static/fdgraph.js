@@ -16,7 +16,7 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 function fdGraph(
-    data
+    data, snaMetricsNode, snaMetricsEdge
 ) {
     const width = 1000;
     const height = 600;
@@ -26,19 +26,38 @@ function fdGraph(
     const links = data.edges.map(d => ({ ...d }));
     const nodes = data.nodes.map(d => ({ ...d }));
 
+    nodes.forEach(node => {
+        for (let elem of snaMetricsNode) {
+            if (elem.node === node.id) {
+                node.numEdges = elem.num_edges;
+            }
+        }
+    })
+
+    links.forEach(edge => {
+        for (let elem of snaMetricsEdge) {
+            if ((elem.From === edge.source && elem.To === edge.target) || (elem.From === edge.target && elem.To === edge.source)) {
+                edge.betweenness_centrality = elem.edge_betweeness_centrality;
+                
+            }
+        }
+    })
+
     const simulation = d3.forceSimulation(nodes)
-        .force("link", d3.forceLink(links).id(d => d.id).distance(d => 4 * 4 * 4))
-        .force("charge", d3.forceManyBody())
+        .force("link", d3.forceLink(links).id(d => d.id).distance(d => 10))
+        .force("charge", d3.forceManyBody().strength(-100))
+        .force("collide", d3.forceCollide((d) => 10/*d.numEdges*/))
         .force("center", d3.forceCenter(width / 2, height / 2))
-        .on("tick", ticked);
+        .on("tick", ticked)
+        .alphaMin(0.005);
 
     const svg = d3.create("svg")
         .attr("width", "100%")
         .attr("height", "100%")
         .attr("viewBox", [0, 0, width, height])
-
-    const g = svg.append("g")
         .attr("cursor", "grab");
+
+    const g = svg.append("g");
 
     const link = g.append("g")
         .attr("stroke", "#999")
@@ -46,21 +65,24 @@ function fdGraph(
         .selectAll()
         .data(links)
         .join("line")
-        .attr("stroke-width", d => Math.sqrt(d.value));
+        .attr("stroke-width", d => 1 + Math.sqrt(d.betweenness_centrality * 1000));
 
     const node = g.append("g")
         .selectAll("g")
         .data(nodes)
         .join("g")
         .attr("id", d => d.id)
+        .attr("class", "node");
 
     node.append("circle")
         .attr("stroke", "#fff")
         .attr("stroke-width", 1.5)
-        .attr("r", 5)
+        .attr("r", d => 3 + Math.sqrt(d.numEdges))
         .attr("fill", d => color(d.group));
 
     node.append("text")
+        .attr("font-size", d => 8 + Math.sqrt(d.numEdges))
+        .attr("font-weight", 500)
         .attr("fill", "var(--primary-text-color)")
         .attr("x", ({ index: i }) => /* (8 + G[i] * 2) */8)
         .attr("y", "0.31em")
@@ -106,7 +128,7 @@ function fdGraph(
 
     svg.call(d3.zoom()
         //.extent([[0, 0], [width, height]])
-        .scaleExtent([0.01, 8])
+        .scaleExtent([0.1, 5])
         .on("zoom", zoomed));
 
     function zoomed({ transform }) {

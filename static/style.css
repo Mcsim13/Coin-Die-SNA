@@ -139,3 +139,10 @@ img.matching-img {
     grid-template-columns: repeat(3, 1fr);
     gap: 8px
 }
+
+.graph-container svg .node {
+
+    &:hover circle {
+        fill: darkblue;
+    }
+}

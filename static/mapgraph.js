@@ -16,7 +16,7 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 function mapGraph(
-    data, svg, map, fsCoords
+    data, svg, map, fsCoords, snaMetricsNode, snaMetricsEdge
 ) {
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
@@ -28,25 +28,49 @@ function mapGraph(
         const layerPoint = map.latLngToLayerPoint(fsCoords[node.id]);
         node.fx = layerPoint.x;
         node.fy = layerPoint.y;
+
+        for (let elem of snaMetricsNode) {
+            if (elem.node === node.id) {
+                node.betweenness_centrality = elem.betweenness_centrality;
+            }
+        }
+    })
+
+    nodes.forEach(node => {
+        for (let elem of snaMetricsNode) {
+            if (elem.node === node.id) {
+                node.numEdges = elem.num_edges;
+            }
+        }
+    })
+
+    links.forEach(edge => {
+        for (let elem of snaMetricsEdge) {
+            if ((elem.From === edge.source && elem.To === edge.target) || (elem.From === edge.target && elem.To === edge.source)) {
+                edge.betweenness_centrality = elem.edge_betweeness_centrality;
+                
+            }
+        }
     })
 
     const simulation = d3.forceSimulation([...nodes, ...fsNodes])
         .force("link", d3.forceLink(links).id(d => d.id).distance(30))
         .force("charge", d3.forceManyBody().strength(-50))
+        .force("collide", d3.forceCollide((d) => 10/*d.numEdges*/))
         // .force("center", d3.forceCenter(width / 2, height / 2))
         .on("tick", ticked)
-        .alphaMin(0.02);
+        .alphaMin(0.01);
 
     
     const g = svg.select("g");
 
     const link = g.append("g")
-        .attr("stroke", "#555")
-        /* .attr("stroke-opacity", 0.6) */
+        .attr("stroke", "#444")
+        .attr("stroke-opacity", 0.6)
         .selectAll()
         .data(links)
         .join("line")
-        .attr("stroke-width", d => 1/* Math.sqrt(d.value) */);
+        .attr("stroke-width", d => 1 + Math.sqrt(d.betweenness_centrality * 1000));
 
     const node = g.append("g")
         .selectAll("g")
@@ -58,13 +82,14 @@ function mapGraph(
     node.append("circle")
         .attr("stroke", "#fff")
         .attr("stroke-width", 1.5)
-        .attr("r", 5)
+        .attr("r", d => 3 + Math.sqrt(d.numEdges))
         .attr("fill", d => color(d.group));
 
     node.append("text")
         .attr("font-size", "8px")
-        .attr("x", ({ index: i }) => /* (8 + G[i] * 2) */8)
-        .attr("y", "0.31em")
+        .attr("text-anchor", "middle")
+        .attr("x", ({ index: i }) => /* (8 + G[i] * 2) */0)
+        .attr("y", 12/*"0.31em"*/)
         .text(d => d.id);
 
     node.call(d3.drag()
@@ -87,12 +112,13 @@ function mapGraph(
     fsNode.append("circle")
         .attr("stroke", "#fff")
         .attr("stroke-width", 1.5)
-        .attr("r", 5)
+        .attr("r", d => 5 + Math.sqrt(d.betweenness_centrality * 100))
         .attr("fill", d => color(d.group));
 
     fsNode.append("text")
-        .attr("x", ({ index: i }) => /* (8 + G[i] * 2) */8)
-        .attr("y", "0.31em")
+        .attr("text-anchor", "middle")
+        .attr("x", ({ index: i }) => 0)
+        .attr("y", 16/*"0.31em"*/)
         .text(d => d.id);
 
 
@@ -132,14 +158,14 @@ function mapGraph(
         fsNode
         .attr("transform", (d) => {
             let layerPoint = map.latLngToLayerPoint(fsCoords[d.id]);
-            d.x = layerPoint.x;
-            d.y = layerPoint.y;
+            /* d.x = layerPoint.x;
+            d.y = layerPoint.y; */
             d.fx = layerPoint.x;
             d.fy = layerPoint.y;
             return `translate(${layerPoint.x},${layerPoint.y})`;
         })
 
-        simulation.alpha(0.3).restart();
+        simulation.alpha(0.1).restart();
     }
 
     drawAndUpdate();

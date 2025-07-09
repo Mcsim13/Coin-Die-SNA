@@ -1,6 +1,11 @@
-.leaflet-overlay-pane svg .node {
+.leaflet-overlay-pane svg .node,
+#graph-container svg .node {
     pointer-events: auto;
     cursor: default;
+
+    &:hover circle {
+        fill: darkblue;
+    }
 }
 
 .leaflet-overlay-pane svg .node text {

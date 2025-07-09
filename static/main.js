@@ -121,10 +121,13 @@ $(async () => {
     const graph_data = await getRequest("graphdata", {});
     console.log(graph_data);
 
-    let chart = fdGraph(graph_data);
+    const snaMetricsNode = await getRequest("snametricsnode", {})
+    const snaMetricsEdge = await getRequest("snametricsedge", {})
+
+    let chart = fdGraph(graph_data, snaMetricsNode, snaMetricsEdge);
     $("#graph-container").html(chart);
 
-    initMap(graph_data);
+    initMap(graph_data, snaMetricsNode, snaMetricsEdge);
 })
 
 export { openInspector }
