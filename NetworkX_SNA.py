@@ -1,7 +1,7 @@
 import json
 import networkx as nx
 import matplotlib.pyplot as plt
-from pyvis.network import Network
+# from pyvis.network import Network
 from jinja2 import Template
 import webbrowser
 import pandas as pd
@@ -34,7 +34,7 @@ def create_graph(edge_list, remove_low_degree_clusters):
         ]
         network_graph.remove_nodes_from(removal)
 
-    nx.draw(network_graph, with_labels=True)
+    """ nx.draw(network_graph, with_labels=True)
     plt.show()
     net = Network(height="800px", width="100%", notebook=False)
     net.from_nx(network_graph)
@@ -55,7 +55,7 @@ def create_graph(edge_list, remove_low_degree_clusters):
 
 
     webbrowser.open(r"SNA_results/network_graph.html")
-    clusters = list(nx.connected_components(network_graph))
+    clusters = list(nx.connected_components(network_graph)) """
     #print(clusters)
     #graph_export = (nx.connected_components(network_graph))
     #print(graph_export)
@@ -141,3 +141,9 @@ if __name__ == "__main__":
     NetworkX_Graph = create_graph(short_edges, True)
 
     network_Analysis(NetworkX_Graph)
+
+    print(NetworkX_Graph)
+    data1 = nx.node_link_data(NetworkX_Graph, edges="edges")
+    json_graph = json.dumps(data1, indent=4)
+    with open("networkx_export.json", "w") as f:
+        f.write(json_graph)

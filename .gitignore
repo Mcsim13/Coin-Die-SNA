@@ -6,3 +6,4 @@
 *.xlsx
 __pycache__
 SNA_results
+!config.json

@@ -2,7 +2,7 @@ import { getRequest } from "./utils.js"
 import { mapGraph } from "./mapgraph.js"
 
 async function initMap(graphData, snaMetricsNode, snaMetricsEdge) {
-    const map = new L.Map("map-container", { zoomControl: false, dragging: true, zoomSnap: 0.05, zoomAnimation: false, fadeAnimation: false }).setView([50.1167, 8.6499], 7);
+    const map = new L.Map("map-container", { zoomControl: false, dragging: true, zoomSnap: 0.05, zoomAnimation: false, fadeAnimation: false }).setView([48.029, 10.180], 7);
 
     const tiles = new L.TileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,

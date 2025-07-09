@@ -1,10 +1,14 @@
-from flask import Flask, render_template, jsonify, request, send_file, Response
+from flask import Flask, render_template, jsonify, request, send_file
 import json
 import glob
 from check_gt import check_gt_file
 from main import analysis_files, get_config, set_config
 from cluster_to_graph import imagecluster_get_cluster, get_coin_findspots, map_clusters_to_findspots, plot_coint_per_die
-from matching_plot import get_matches_plot
+try:
+    from matching_plot import get_matches_plot
+    auto_die_studies_available = True
+except ImportError:
+    auto_die_studies_available = False
 
 
 app = Flask(__name__)
@@ -80,7 +84,10 @@ def coinimg():
     folder = config["images-reverse"] if side == "r" else config["images-obverse"]
     pattern = folder + "/*_" + coin_id + "_*"
     paths = glob.glob(pattern, recursive=False)
-    return send_file(paths[0], mimetype="image/png")
+    if not paths:
+        return "not available"
+    else:
+        return send_file(paths[0], mimetype="image/png")
 
 
 @app.route("/coinsperdiechart")
@@ -94,6 +101,8 @@ def coinsperimg_chart():
 
 @app.route("/coinmatching")
 def coinmatching_img():
+    if not auto_die_studies_available:
+        return "not available"
     coin_id1 = request.args.get("coinid1", "")
     coin_id2 = request.args.get("coinid2", "")
     side = request.args.get("side", "r")

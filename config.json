@@ -1,0 +1,7 @@
+{
+    "dataset-obverse": "die_studie_obverse_12_aglp.json",
+    "dataset-reverse": "die_studie_reverse_10_projhdbscan.json",
+    "images-obverse": "",
+    "images-reverse": "",
+    "auto-die-studies-path": ""
+}
