@@ -1,13 +1,15 @@
 import json
 import networkx as nx
 import matplotlib.pyplot as plt
-# from pyvis.network import Network
+from pyvis.network import Network
 from jinja2 import Template
 import webbrowser
 import pandas as pd
 import regex as re
+import os
 
 from cluster_to_graph import construct_graph_both_sides
+from networkx.algorithms.community import greedy_modularity_communities
 from main import get_config
 
 
@@ -34,7 +36,7 @@ def create_graph(edge_list, remove_low_degree_clusters):
         ]
         network_graph.remove_nodes_from(removal)
 
-    """ nx.draw(network_graph, with_labels=True)
+    nx.draw(network_graph, with_labels=True)
     plt.show()
     net = Network(height="800px", width="100%", notebook=False)
     net.from_nx(network_graph)
@@ -55,7 +57,7 @@ def create_graph(edge_list, remove_low_degree_clusters):
 
 
     webbrowser.open(r"SNA_results/network_graph.html")
-    clusters = list(nx.connected_components(network_graph)) """
+    clusters = list(nx.connected_components(network_graph)) 
     #print(clusters)
     #graph_export = (nx.connected_components(network_graph))
     #print(graph_export)
@@ -129,6 +131,30 @@ def network_Analysis(graph):
         json.dump(sna_edge_metrics, f_2, indent=2)
 
 
+def get_subgraphs(graph):
+    
+    communities = list(greedy_modularity_communities(graph))
+    communities = [community for community in communities if len(community) > 1]
+    directory = "subgraphs"
+
+    for counter, entry in enumerate(communities):
+        subgraph = graph.subgraph(entry).copy()
+        
+        plt.figure(figsize=(12, 12))
+        pos = nx.spring_layout(subgraph, seed=50)
+        nx.draw(subgraph, pos, with_labels = True, node_size=300)
+        plt.title(f"Community_{counter}")
+
+        save_path = os.path.join(directory, f"Community_{counter}.png")
+        plt.savefig(save_path)
+        plt.close
+        
+
+
+
+
+
+
 
 if __name__ == "__main__":
 
@@ -141,6 +167,8 @@ if __name__ == "__main__":
     NetworkX_Graph = create_graph(short_edges, True)
 
     network_Analysis(NetworkX_Graph)
+
+    get_subgraphs(NetworkX_Graph)
 
     print(NetworkX_Graph)
     data1 = nx.node_link_data(NetworkX_Graph, edges="edges")
