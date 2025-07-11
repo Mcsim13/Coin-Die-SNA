@@ -38,7 +38,7 @@ function fdGraph(
         for (let elem of snaMetricsEdge) {
             if ((elem.From === edge.source && elem.To === edge.target) || (elem.From === edge.target && elem.To === edge.source)) {
                 edge.betweenness_centrality = elem.edge_betweeness_centrality;
-                
+
             }
         }
     })
@@ -96,6 +96,10 @@ function fdGraph(
     node.on("click", (e) => {
         let id = e.currentTarget.id;
         openInspector(id);
+
+        link.attr("class", "");
+        let connectedLinks = link.filter(d => d.source.id == id || d.target.id == id)
+            .attr("class", "sel");
     })
 
     function ticked() {
