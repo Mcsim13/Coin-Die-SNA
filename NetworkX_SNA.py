@@ -22,7 +22,7 @@ def shorten_edges(edge_list):
     relevant_edges = [(e, f) for (e, f) in filtered_two_value_edge if not (pattern.match(e) and pattern.match(f))]
     return relevant_edges
 
-def create_graph(edge_list, remove_low_degree_clusters):
+def create_graph(edge_list, node_list, remove_low_degree_clusters):
     network_graph = nx.Graph()
     edges = [("a","b"), ("b","c")]
     #print(edge_list)
@@ -35,6 +35,30 @@ def create_graph(edge_list, remove_low_degree_clusters):
             if network_graph.degree(node) == 1 and pattern.match(node)
         ]
         network_graph.remove_nodes_from(removal)
+
+    attributes = {}
+
+    for node in node_list:
+        node_id = node[0]
+        if node_id in network_graph:
+            if node[1] == "Cluster":
+                attributes[node_id] = {
+                    "type" : node[1],
+                    "cluster_id" : node_id,
+                    "num_coins_in_cluster" : node[3],
+                    "coins_in_cluster": node[4],
+                    "node_type" : node[5]
+                    }
+            elif node[1] == "Findspot":
+                attributes[node_id] = {
+                    "type" : node[1],
+                    "Findspot_name" : node_id,
+                    "num_coins_at_findspot" : node[3],
+                    "coins_at_findspot" : node[4],
+                    "findspot_coordinates" : node[5],
+                    "findspot_type" : node[6]
+                    }
+    nx.set_node_attributes(network_graph, attributes)
 
     nx.draw(network_graph, with_labels=True)
     plt.show()
@@ -164,11 +188,14 @@ if __name__ == "__main__":
 
     short_edges = shorten_edges(edges)
 
-    NetworkX_Graph = create_graph(short_edges, True)
+    NetworkX_Graph = create_graph(short_edges, nodes, True)
 
     network_Analysis(NetworkX_Graph)
 
     get_subgraphs(NetworkX_Graph)
+
+    print(NetworkX_Graph.nodes["2009_r"])
+    print(NetworkX_Graph.nodes["Manching"])
 
     print(NetworkX_Graph)
     data1 = nx.node_link_data(NetworkX_Graph, edges="edges")
