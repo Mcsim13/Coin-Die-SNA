@@ -186,6 +186,8 @@ if __name__ == "__main__":
 
     nodes, edges = construct_graph_both_sides("rsc/" + config["dataset-reverse"], "rsc/" + config["dataset-obverse"])
 
+    print(edges)
+
     short_edges = shorten_edges(edges)
 
     NetworkX_Graph = create_graph(short_edges, nodes, True)

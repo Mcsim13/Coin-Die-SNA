@@ -23,7 +23,7 @@ function mapGraph(
     const links = data.edges.map(d => ({ ...d }));
     const nodes = data.nodes.map(d => ({ ...d })).filter(d => !isNaN(d.id.split("_")[0]));
     const fsNodes = data.nodes.map(d => ({ ...d })).filter(d => isNaN(d.id.split("_")[0]));
-    
+
     fsNodes.forEach(node => {
         const layerPoint = map.latLngToLayerPoint(fsCoords[node.id]);
         node.fx = layerPoint.x;
@@ -48,7 +48,7 @@ function mapGraph(
         for (let elem of snaMetricsEdge) {
             if ((elem.From === edge.source && elem.To === edge.target) || (elem.From === edge.target && elem.To === edge.source)) {
                 edge.betweenness_centrality = elem.edge_betweeness_centrality;
-                
+
             }
         }
     })
@@ -56,12 +56,12 @@ function mapGraph(
     const simulation = d3.forceSimulation([...nodes, ...fsNodes])
         .force("link", d3.forceLink(links).id(d => d.id).distance(30))
         .force("charge", d3.forceManyBody().strength(-50))
-        .force("collide", d3.forceCollide((d) => 10/*d.numEdges*/))
+        .force("collide", d3.forceCollide((d) => 10 + Math.sqrt(d.numEdges)))
         // .force("center", d3.forceCenter(width / 2, height / 2))
         .on("tick", ticked)
         .alphaMin(0.01);
 
-    
+
     const g = svg.select("g");
 
     const link = g.append("g")
@@ -100,6 +100,10 @@ function mapGraph(
     node.on("click", (e) => {
         let id = e.currentTarget.id;
         openInspector(id);
+
+        link.attr("class", "");
+        let connectedLinks = link.filter(d => d.source.id == id || d.target.id == id)
+            .attr("class", "sel");
     })
 
     const fsNode = g.append("g")
@@ -121,6 +125,14 @@ function mapGraph(
         .attr("y", 16/*"0.31em"*/)
         .text(d => d.id);
 
+    fsNode.on("click", (e) => {
+        let id = e.currentTarget.id;
+        // openInspector(id);
+
+        link.attr("class", "");
+        let connectedLinks = link.filter(d => d.source.id == id || d.target.id == id)
+            .attr("class", "sel");
+    })
 
     function ticked() {
         link
@@ -156,14 +168,14 @@ function mapGraph(
 
     function drawAndUpdate() {
         fsNode
-        .attr("transform", (d) => {
-            let layerPoint = map.latLngToLayerPoint(fsCoords[d.id]);
-            /* d.x = layerPoint.x;
-            d.y = layerPoint.y; */
-            d.fx = layerPoint.x;
-            d.fy = layerPoint.y;
-            return `translate(${layerPoint.x},${layerPoint.y})`;
-        })
+            .attr("transform", (d) => {
+                let layerPoint = map.latLngToLayerPoint(fsCoords[d.id]);
+                /* d.x = layerPoint.x;
+                d.y = layerPoint.y; */
+                d.fx = layerPoint.x;
+                d.fy = layerPoint.y;
+                return `translate(${layerPoint.x},${layerPoint.y})`;
+            })
 
         simulation.alpha(0.1).restart();
     }

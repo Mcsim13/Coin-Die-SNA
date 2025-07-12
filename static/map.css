@@ -16,6 +16,13 @@
     fill: var(--primary-text-color);
 }
 
+.leaflet-overlay-pane svg line.sel,
+#graph-container svg line.sel {
+    stroke-opacity: 1;
+    stroke-width: 3;
+    stroke: var(--main-accent-color);
+}
+
 div.leaflet-control-zoom.leaflet-bar.leaflet-control {
     border: 1px solid var(--border-color);
     background: var(--background-color-medium);
