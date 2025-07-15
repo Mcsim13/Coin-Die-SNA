@@ -1,7 +1,7 @@
 import json
 import networkx as nx
 import matplotlib.pyplot as plt
-from pyvis.network import Network
+#from pyvis.network import Network
 from jinja2 import Template
 import webbrowser
 import pandas as pd
@@ -10,7 +10,7 @@ import os
 
 from cluster_to_graph import construct_graph_both_sides
 from networkx.algorithms.community import greedy_modularity_communities
-from main import get_config
+from config import get_config
 
 
 def shorten_edges(edge_list):
@@ -62,7 +62,7 @@ def create_graph(edge_list, node_list, remove_low_degree_clusters):
 
     nx.draw(network_graph, with_labels=True)
     plt.show()
-    net = Network(height="800px", width="100%", notebook=False)
+    """ net = Network(height="800px", width="100%", notebook=False)
     net.from_nx(network_graph)
 
     
@@ -84,7 +84,7 @@ def create_graph(edge_list, node_list, remove_low_degree_clusters):
     clusters = list(nx.connected_components(network_graph)) 
     #print(clusters)
     #graph_export = (nx.connected_components(network_graph))
-    #print(graph_export)
+    #print(graph_export) """
     return network_graph
 
 def network_Analysis(graph):
@@ -172,12 +172,13 @@ def get_subgraphs(graph):
         save_path = os.path.join(directory, f"Community_{counter}.png")
         plt.savefig(save_path)
         plt.close
-        
 
 
-
-
-
+def export_graph(graph):
+    data1 = nx.node_link_data(graph, edges="edges")
+    json_graph = json.dumps(data1, indent=4)
+    with open("networkx_export.json", "w") as f:
+        f.write(json_graph)
 
 
 if __name__ == "__main__":
@@ -186,7 +187,7 @@ if __name__ == "__main__":
 
     nodes, edges = construct_graph_both_sides("rsc/" + config["dataset-reverse"], "rsc/" + config["dataset-obverse"])
 
-    print(edges)
+    #print(edges)
 
     short_edges = shorten_edges(edges)
 
@@ -196,8 +197,8 @@ if __name__ == "__main__":
 
     get_subgraphs(NetworkX_Graph)
 
-    print(NetworkX_Graph.nodes["2009_r"])
-    print(NetworkX_Graph.nodes["Manching"])
+    #print(NetworkX_Graph.nodes["2009_r"])
+    #print(NetworkX_Graph.nodes["Manching"])
 
     print(NetworkX_Graph)
     data1 = nx.node_link_data(NetworkX_Graph, edges="edges")

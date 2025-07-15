@@ -30,6 +30,7 @@ function fdGraph(
         for (let elem of snaMetricsNode) {
             if (elem.node === node.id) {
                 node.numEdges = elem.num_edges;
+                node.betweenness_centrality = elem.betweenness_centrality;
             }
         }
     })
@@ -38,7 +39,6 @@ function fdGraph(
         for (let elem of snaMetricsEdge) {
             if ((elem.From === edge.source && elem.To === edge.target) || (elem.From === edge.target && elem.To === edge.source)) {
                 edge.betweenness_centrality = elem.edge_betweeness_centrality;
-
             }
         }
     })
@@ -49,7 +49,7 @@ function fdGraph(
         .force("collide", d3.forceCollide((d) => 10/*d.numEdges*/))
         .force("center", d3.forceCenter(width / 2, height / 2))
         .on("tick", ticked)
-        .alphaMin(0.005);
+        .alphaMin(0.001);
 
     const svg = d3.create("svg")
         .attr("width", "100%")
@@ -77,15 +77,22 @@ function fdGraph(
     node.append("circle")
         .attr("stroke", "#fff")
         .attr("stroke-width", 1.5)
-        .attr("r", d => 3 + Math.sqrt(d.numEdges))
-        .attr("fill", d => color(d.group));
+        .attr("r", (d) => {
+            if (d.type === "Findspot") {
+                return 5 + Math.sqrt(d.betweenness_centrality * 1000);
+            } else {
+                return 3 + Math.sqrt(d.num_coins_in_cluster);
+            }
+        })
+        .attr("fill", d => color(d.type + d.node_type));
 
     node.append("text")
-        .attr("font-size", d => 8 + Math.sqrt(d.numEdges))
+        .attr("font-size", d => 6 + Math.sqrt(d.numEdges))
         .attr("font-weight", 500)
         .attr("fill", "var(--primary-text-color)")
-        .attr("x", ({ index: i }) => /* (8 + G[i] * 2) */8)
-        .attr("y", "0.31em")
+        .attr("text-anchor", "middle")
+        .attr("x", 0)
+        .attr("y", 12)
         .text(d => d.id);
 
     node.call(d3.drag()

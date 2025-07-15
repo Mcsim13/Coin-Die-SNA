@@ -1,4 +1,3 @@
-import { getRequest } from "./utils.js"
 import { mapGraph } from "./mapgraph.js"
 
 async function initMap(graphData, snaMetricsNode, snaMetricsEdge) {
@@ -12,9 +11,6 @@ async function initMap(graphData, snaMetricsNode, snaMetricsEdge) {
     new L.Control.Scale({ maxWidth: 200, position: 'bottomleft', imperial: false }).addTo(map);
     new L.Control.Zoom({ position: 'bottomleft' }).addTo(map);
 
-    let findspotCoords = await getRequest("findspotcoords", {})
-    let findspotCoordsAlt = Object.entries(findspotCoords).map(([key, value]) => ({ "id": key, "coords": value }));
-
     let svgGraphLayer = new L.SVG();
     svgGraphLayer.addTo(map);
 
@@ -23,7 +19,7 @@ async function initMap(graphData, snaMetricsNode, snaMetricsEdge) {
     graphData.nodes = graphData.nodes.filter(d => d.id !== "");
     graphData.edges = graphData.edges.filter(d => d.source !== "" && d.target !== "");
 
-    let svgGraph = mapGraph(graphData, svg, map, findspotCoords, snaMetricsNode, snaMetricsEdge);
+    let svgGraph = mapGraph(graphData, svg, map, snaMetricsNode, snaMetricsEdge);
 }
 
 export { initMap }

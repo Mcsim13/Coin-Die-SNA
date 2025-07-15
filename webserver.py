@@ -2,7 +2,7 @@ from flask import Flask, render_template, jsonify, request, send_file
 import json
 import glob
 from check_gt import check_gt_file
-from main import analysis_files, get_config, set_config
+from config import analysis_files, get_config, set_config
 from cluster_to_graph import imagecluster_get_cluster, get_coin_findspots, map_clusters_to_findspots, plot_coint_per_die
 try:
     from matching_plot import get_matches_plot
@@ -108,15 +108,6 @@ def coinmatching_img():
     side = request.args.get("side", "r")
     num_matches, img_matches = get_matches_plot(coin_id1, coin_id2, side)
     return send_file(img_matches, mimetype="image/jpeg")
-
-
-# Temp
-@app.route("/findspotcoords")
-def findspotcoords():
-    with open("fs_coords.json", "r") as f:
-        data = json.load(f)
-    coords_data = jsonify(data)
-    return coords_data
 
 
 @app.route("/snametricsnode")

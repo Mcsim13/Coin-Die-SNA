@@ -1,31 +1,22 @@
-import os
-import json
+from config import get_config
+from cluster_to_graph import construct_graph_both_sides
+from NetworkX_SNA import shorten_edges, create_graph, network_Analysis, export_graph
 
 
-def analysis_files():
-    with os.scandir("rsc") as items:
-        paths = [(file.path, file.name) for file in items if file.name.endswith("json")]
+def social_network_analysis_pipeline():
+    config = get_config()
 
-    return sorted(paths)
+    # Graph Konstruktion
+    nodes, edges = construct_graph_both_sides("rsc/" + config["dataset-reverse"], "rsc/" + config["dataset-obverse"])
 
+    # Social Network Analysis
+    short_edges = shorten_edges(edges)
+    NetworkX_Graph = create_graph(short_edges, nodes, True)
+    network_Analysis(NetworkX_Graph)
 
-def get_config():
-    with open("config.json", "r") as config_file:
-        config = json.load(config_file)
-
-    return config
-
-
-def set_config(key, value):
-    with open("config.json", "r") as config_file:
-        config = json.load(config_file)
-
-    config[key] = value
-
-    with open("config.json", "w") as config_file:
-        json.dump(config, config_file, indent=4)
+    # Export
+    export_graph(NetworkX_Graph)
 
 
 if __name__ == "__main__":
-    files = analysis_files()
-    print(files)
+    social_network_analysis_pipeline()

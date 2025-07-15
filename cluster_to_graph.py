@@ -1,8 +1,7 @@
 import json
 import csv
 from findspot_geolocation import get_findspot_coordinate
-from main import get_config
-import networkx as nx
+from config import get_config
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -142,31 +141,6 @@ def construct_graph_both_sides(cluster_file_r, cluster_file_a):
     return nodes, edges
 
 
-def networkX_graph():
-    """
-    OLD
-    """
-    G = nx.Graph()
-
-    config = get_config()
-    nodes, edges = construct_graph_both_sides("rsc/" + config["dataset-reverse"], "rsc/" + config["dataset-obverse"])
-
-    node_names = [node[0] for node in nodes]
-    edges_only = [edge[:2] for edge in edges]
-
-    G.add_nodes_from(node_names)
-    G.add_edges_from(edges_only)
-
-    print(G)
-
-    data1 = nx.node_link_data(G, edges="edges")
-    # print(data1)
-    json_graph = json.dumps(data1, indent=4)
-
-    with open("networkx_export.json", "w") as f:
-        f.write(json_graph)
-
-
 def plot_coint_per_die(clusters):
     length_counts = {}
 
@@ -184,7 +158,7 @@ def plot_coint_per_die(clusters):
     counts = [length_counts.get(length, 0) for length in lengths]
 
     plt.figure(figsize=(8, 4))
-    plt.bar(lengths, counts)
+    plt.bar(lengths, counts, color="#4689ea")
     plt.xlabel("Coins per die")
     plt.ylabel("Count")
     plt.xticks(lengths)
@@ -196,22 +170,6 @@ def plot_coint_per_die(clusters):
     buffer.seek(0)
     return buffer
     # plt.show()
-
-
-def findspot_coordinates_write(findspots):
-    """
-    OLD
-    """
-    fs_coordinates = dict()
-    for fs, _ in findspots.items():
-        coords = get_findspot_coordinate(fs)
-        fs_coordinates[fs] = coords
-
-    # print(fs_coordinates)
-    json_coords = json.dumps(fs_coordinates, indent=4)
-
-    with open("fs_coords.json", "w") as f:
-        f.write(json_coords)
 
 
 def get_findspot_coordinates(findspots):
@@ -232,10 +190,5 @@ if __name__ == "__main__":
     # print(nodes)
     # print(edges)
 
-    # networkX_graph()
-
     # clusters = imagecluster_get_cluster("rsc/" + config["dataset-reverse"], "r")
     # plot_coint_per_die(clusters)
-
-    # findspots = get_findspots()
-    # findspot_coordinates_write(findspots)

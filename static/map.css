@@ -14,6 +14,7 @@
     stroke: var(--full-color);
     paint-order: stroke fill;
     fill: var(--primary-text-color);
+    text-anchor: middle;
 }
 
 .leaflet-overlay-pane svg line.sel,

@@ -16,16 +16,16 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 function mapGraph(
-    data, svg, map, fsCoords, snaMetricsNode, snaMetricsEdge
+    data, svg, map, snaMetricsNode, snaMetricsEdge
 ) {
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
     const links = data.edges.map(d => ({ ...d }));
-    const nodes = data.nodes.map(d => ({ ...d })).filter(d => !isNaN(d.id.split("_")[0]));
-    const fsNodes = data.nodes.map(d => ({ ...d })).filter(d => isNaN(d.id.split("_")[0]));
+    const nodes = data.nodes.map(d => ({ ...d })).filter(d => d.type == "Cluster");
+    const fsNodes = data.nodes.map(d => ({ ...d })).filter(d => d.type == "Findspot");
 
     fsNodes.forEach(node => {
-        const layerPoint = map.latLngToLayerPoint(fsCoords[node.id]);
+        const layerPoint = map.latLngToLayerPoint(node.findspot_coordinates);
         node.fx = layerPoint.x;
         node.fy = layerPoint.y;
 
@@ -82,14 +82,13 @@ function mapGraph(
     node.append("circle")
         .attr("stroke", "#fff")
         .attr("stroke-width", 1.5)
-        .attr("r", d => 3 + Math.sqrt(d.numEdges))
-        .attr("fill", d => color(d.group));
+        .attr("r", d => 3 + Math.sqrt(d.num_coins_in_cluster))
+        .attr("fill", d => color(d.type + d.node_type));
 
     node.append("text")
-        .attr("font-size", "8px")
-        .attr("text-anchor", "middle")
-        .attr("x", ({ index: i }) => /* (8 + G[i] * 2) */0)
-        .attr("y", 12/*"0.31em"*/)
+        .attr("font-size", d => 6 + Math.sqrt(d.numEdges))
+        .attr("x", 0)
+        .attr("y", 12)
         .text(d => d.id);
 
     node.call(d3.drag()
@@ -116,13 +115,13 @@ function mapGraph(
     fsNode.append("circle")
         .attr("stroke", "#fff")
         .attr("stroke-width", 1.5)
-        .attr("r", d => 5 + Math.sqrt(d.betweenness_centrality * 100))
-        .attr("fill", d => color(d.group));
+        .attr("r", d => 5 + Math.sqrt(d.betweenness_centrality * 200))
+        .attr("fill", d => color(d.type + d.node_type));
 
     fsNode.append("text")
-        .attr("text-anchor", "middle")
-        .attr("x", ({ index: i }) => 0)
-        .attr("y", 16/*"0.31em"*/)
+        .attr("font-size", d => 6 + Math.sqrt(d.numEdges))
+        .attr("x", 0)
+        .attr("y", 16)
         .text(d => d.id);
 
     fsNode.on("click", (e) => {
@@ -169,7 +168,7 @@ function mapGraph(
     function drawAndUpdate() {
         fsNode
             .attr("transform", (d) => {
-                let layerPoint = map.latLngToLayerPoint(fsCoords[d.id]);
+                let layerPoint = map.latLngToLayerPoint(d.findspot_coordinates);
                 /* d.x = layerPoint.x;
                 d.y = layerPoint.y; */
                 d.fx = layerPoint.x;

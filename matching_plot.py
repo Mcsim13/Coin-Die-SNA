@@ -14,7 +14,7 @@ from io import BytesIO
 import glob
 import torch
 from skimage import io
-from main import get_config
+from config import get_config
 from timeit import default_timer as timer
 
 config = get_config()
