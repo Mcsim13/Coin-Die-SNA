@@ -160,9 +160,19 @@ def get_subgraphs(graph):
     communities = list(greedy_modularity_communities(graph))
     communities = [community for community in communities if len(community) > 1]
     directory = "subgraphs"
+    community_data = []
 
     for counter, entry in enumerate(communities):
         subgraph = graph.subgraph(entry).copy()
+
+        nodes = list(subgraph.nodes())
+        edges = list(subgraph.edges())
+
+        community_data.append({
+            "id" : counter,
+            "nodes" : nodes,
+            "edges" : [list(edge) for edge in edges]
+        })
         
         plt.figure(figsize=(12, 12))
         pos = nx.spring_layout(subgraph, seed=50)
@@ -172,6 +182,9 @@ def get_subgraphs(graph):
         save_path = os.path.join(directory, f"Community_{counter}.png")
         plt.savefig(save_path)
         plt.close
+
+    with open(r"subgraphs/community_data.json", "w") as f:
+        json.dump(community_data, f, indent=2)
 
 
 def export_graph(graph):
