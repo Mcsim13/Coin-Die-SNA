@@ -49,7 +49,7 @@ button.tab {
     }
     
     &:active {
-        transform: scale(1.1);
+        transform: scale(1.05);
         transition: transform 0.1s cubic-bezier(.24,.02,.14,.98);
     }
 
@@ -71,6 +71,6 @@ button.tab.active {
 }
 
 @keyframes spring {
-    0%   { transform: scale(1.1); }
+    0%   { transform: scale(1.05); }
     100% { transform: scale(1); }
 }

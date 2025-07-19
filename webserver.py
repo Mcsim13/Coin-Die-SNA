@@ -3,6 +3,7 @@ import json
 import glob
 from check_gt import check_gt_file
 from config import analysis_files, get_config, set_config
+from main import social_network_analysis_pipeline
 from cluster_to_graph import imagecluster_get_cluster, get_coin_findspots, map_clusters_to_findspots, plot_coint_per_die
 try:
     from matching_plot import get_matches_plot
@@ -58,7 +59,14 @@ def config_set_api():
     key = data.get("key")
     value = data.get("value")
     set_config(key, value)
-    return jsonify({"response": "ok"})
+    return jsonify({"text": "ok"})
+
+
+@app.route("/snapipeline", methods=["POST"])
+def start_sna_pipeline():
+    social_network_analysis_pipeline()
+
+    return jsonify({"text": "ok"})
 
 
 @app.route("/cluster")
@@ -82,8 +90,8 @@ def coinimg():
 
     config = get_config()
     folder = config["images-reverse"] if side == "r" else config["images-obverse"]
-    pattern = folder + "/*_" + coin_id + "_*"
-    paths = glob.glob(pattern, recursive=False)
+    pattern = folder + "/**/" + coin_id + "_*"
+    paths = glob.glob(pattern, recursive=True)
     if not paths:
         return "not available"
     else:

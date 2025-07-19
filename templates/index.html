@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,12 +11,16 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
         integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/2.0.0-alpha/leaflet.css" integrity="sha512-LPN9LDgfRWOAI5NzflmV0UmS9D2rz1/LVMX9uv1CJXmVopPOuoHtimoYHTI6XEfO0Ck2sUZzsv2/F7HroX5i6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/2.0.0-alpha/leaflet.css"
+        integrity="sha512-LPN9LDgfRWOAI5NzflmV0UmS9D2rz1/LVMX9uv1CJXmVopPOuoHtimoYHTI6XEfO0Ck2sUZzsv2/F7HroX5i6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"/>
 
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/2.0.0-alpha/leaflet-global.js" integrity="sha512-hmPv7CCD+5RTbt5vJM/c+Myjwc26rnmEOsOoFT0Re9tcohWwR96Yg7k9fJnYkcEouCTDFLG44WouAqiLcHlk5Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/2.0.0-alpha/leaflet-global.js"
+        integrity="sha512-hmPv7CCD+5RTbt5vJM/c+Myjwc26rnmEOsOoFT0Re9tcohWwR96Yg7k9fJnYkcEouCTDFLG44WouAqiLcHlk5Q=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <script type="module" src="{{ url_for('static', filename='main.js') }}"></script>
 </head>
@@ -25,10 +30,21 @@
         <div id="main-pages">
             <div id="graph-container" style="height: 100vh; width: 100%; z-index: 1; display: none;"></div>
             <div id="map-container" style="height: 100vh; width: 100%; z-index: 2;"></div>
-            <div id="analysis-data-container" style="height: 100vh; width: 100%; z-index: 1; padding: 64px 32px 32px 32px; overflow: scroll; display: none;">
-                <h2 style="margin-bottom: 8px;">Analysis Data</h2>
+            <div id="analysis-data-container"
+                style="height: 100vh; width: 100%; z-index: 1; padding: 64px 32px 32px 32px; overflow: scroll; display: none;">
+                <div class="flex" style="justify-content: space-between;">
+                    <h2 style="margin-bottom: 8px;">Analysis Data</h2>
+                    <div>
+                        <i class="fa-solid fa-spinner fa-spin" id="sna-spinner" style="display: none;"></i>
+                        <i class="fa-solid fa-check" id="sna-check" style="display: none;"></i>
+                        <button class="primary" id="start-sna">Start SNA Pipeline</button>
+                    </div>
+                </div>
                 <p>
-                    Coin die data is expected to be in form of a json file containing coin id and die id (string or numeric) as key value pairs, e.g. {"coinid2372": "die25", ...}. Select which one should be used as reverse and obverse. For evaluation with the manual die study, the reverse dataset should contain "reverse" in the name.
+                    Coin die data is expected to be in form of a json file containing coin id and die id (string or
+                    numeric) as key value pairs, e.g. {"coinid2372": "die25", ...}. Select which one should be used as
+                    reverse and obverse. For evaluation with the manual die study, the reverse dataset should contain
+                    "reverse" in the name.
                 </p>
                 <div id="analysis-list" class="list">
 
@@ -43,12 +59,14 @@
             </div>
             <div id="tabbar">
                 <div class="flex">
-                    <button class="tab" id="force-graph-btn"><i class="fa-solid fa-circle-nodes"></i>Force Graph</button>
-                    <button class="tab active" id="map-graph-btn"><i class="fa-solid fa-map-location-dot"></i></i>Map View</button>
-                    <button class="tab"><i class="fa-solid fa-chart-pie"></i>Statistics</button>
+                    <button class="tab" id="force-graph-btn"><i class="fa-solid fa-circle-nodes"></i>Force
+                        Graph</button>
+                    <button class="tab active" id="map-graph-btn"><i class="fa-solid fa-map-location-dot"></i></i>Map
+                        View</button>
                     <button class="tab" id="analysis-data-btn"><i class="fa-solid fa-database"></i>Die Data</button>
                     <div>
-                        <button class="plain" id="appearance" style="width: 32px; padding: 6px"><i class="fa-regular fa-moon"></i></button>
+                        <button class="plain" id="appearance" style="width: 32px; padding: 6px"><i
+                                class="fa-regular fa-moon"></i></button>
                     </div>
                 </div>
             </div>
@@ -65,7 +83,11 @@
                     </div>
                     <div id="inspector-body">
                         <div id="coin-section"></div>
-                        <div><h3 style="margin: 8px 0">Image Matching</h3></div>
+                        <div id="inspector-comparison-heading">
+                            <h3 style="margin: 8px 0">Image Matching</h3>
+                            <p style="margin-top: 0;">Select two coins from above to see XFeat Matching as used in
+                                Auto-Die-Studies.</p>
+                        </div>
                         <div id="inspector-comparison"></div>
                     </div>
                 </div>
@@ -74,4 +96,5 @@
 
     </div>
 </body>
+
 </html>

@@ -2,6 +2,8 @@ import json
 import csv
 from findspot_geolocation import get_findspot_coordinate
 from config import get_config
+import glob
+import re
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -75,6 +77,27 @@ def connect_nodes_pairwise(node_list, name_prefix=""):
     return edges
 
 
+def get_cluster_times(clusters, side):
+    """
+    Return { cluster_id: allen_type }
+    clusters: { cluster_id : [coin_id] }
+    """
+    config = get_config()
+    folder = config["images-reverse"] if side == "r" else config["images-obverse"]
+
+    cluster_times = {}
+
+    for cluster, coins in clusters.items():
+        pattern = folder + "/**/" + coins[0] + "_*"
+        paths = glob.glob(pattern, recursive=True)
+
+        search_split = paths[0][len(folder):]
+        time = re.search(r"/(\w+)/.+", search_split)
+        cluster_times[cluster] = time.group(1)
+
+    return cluster_times
+
+
 def construct_graph(cluster_file, side):
     """
     Nodes = Cluster, Findspots
@@ -85,15 +108,17 @@ def construct_graph(cluster_file, side):
     findspots = get_findspots()
     findspot_coords = get_findspot_coordinates(findspots)
     clusters_at_findspot = map_clusters_to_findspots(clusters, coin_findspots)
+    cluster_times = get_cluster_times(clusters, side)
     # print(clusters)
     # print(coin_findspots)
     # print(findspots)
     # print(clusters_at_findspot)
+    # print(cluster_times)
 
     # Nodes
     nodes = []
     for cluster, coins in clusters.items():
-        node = (cluster, "Cluster", cluster, len(coins), tuple(coins), side)
+        node = (cluster, "Cluster", cluster, len(coins), tuple(coins), side, cluster_times[cluster])
         nodes.append(node)
 
     for findspot, (num_coins, fs_type) in findspots.items():

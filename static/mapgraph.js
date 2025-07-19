@@ -1,4 +1,4 @@
-import { openInspector } from "./main.js";
+import { openInspector, openInspectorFs } from "./main.js";
 /* ISC License
 
 Copyright 2017–2023 Observable, Inc.
@@ -126,11 +126,19 @@ function mapGraph(
 
     fsNode.on("click", (e) => {
         let id = e.currentTarget.id;
-        // openInspector(id);
+        openInspectorFs(id);
 
         link.attr("class", "");
         let connectedLinks = link.filter(d => d.source.id == id || d.target.id == id)
-            .attr("class", "sel");
+           .attr("class", "sel");
+        
+        let connectedEdges = links.filter(d => d.source.id == id || d.target.id == id);
+        
+        for (let connection of connectedEdges) {
+            let otherNode = connection.source.id != id ? connection.source.id : connection.target.id;
+            let con2 = link.filter(d => d.source.id == otherNode || d.target.id == otherNode)
+                .attr("class", "sel");
+        }
     })
 
     function ticked() {

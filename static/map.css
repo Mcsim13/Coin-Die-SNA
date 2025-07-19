@@ -4,7 +4,7 @@
     cursor: default;
 
     &:hover circle {
-        fill: darkblue;
+        fill: #202020
     }
 }
 

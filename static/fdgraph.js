@@ -1,4 +1,4 @@
-import { openInspector } from "./main.js";
+import { openInspector, openInspectorFs } from "./main.js";
 /* ISC License
 
 Copyright 2017–2023 Observable, Inc.
@@ -102,11 +102,26 @@ function fdGraph(
 
     node.on("click", (e) => {
         let id = e.currentTarget.id;
-        openInspector(id);
+        let type = data.nodes.filter(d => d.id === id)[0].type;
+        
+        if (type === "Cluster") {
+            openInspector(id);
+        } else {
+            openInspectorFs(id);
+        }
 
         link.attr("class", "");
         let connectedLinks = link.filter(d => d.source.id == id || d.target.id == id)
             .attr("class", "sel");
+        
+        let connectedEdges = links.filter(d => d.source.id == id || d.target.id == id);
+        
+        for (let connection of connectedEdges) {
+            let otherNode = connection.source.id != id ? connection.source : connection.target;
+            if (otherNode.type == "Findspot") continue;
+            let con2 = link.filter(d => d.source.id == otherNode.id || d.target.id == otherNode.id)
+                .attr("class", "sel");
+        }
     })
 
     function ticked() {

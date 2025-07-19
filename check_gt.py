@@ -2,7 +2,8 @@ import json
 import csv
 import collections
 from math import comb
-from sklearn.metrics import adjusted_rand_score, adjusted_mutual_info_score
+from sklearn.metrics import adjusted_mutual_info_score
+from config import get_config
 
 
 def get_cluster_assignments_json(cluster_json):
@@ -132,13 +133,15 @@ def check_gt_file(pred_file, coin_side):
 
 
 if __name__ == "__main__":
-    cluster_imagecluster_r = get_cluster_assignments_json("rsc/die_studie_reverse_10_projhdbscan.json")
-    cluster_imagecluster_a = get_cluster_assignments_json("rsc/die_studie_obverse_12_aglp.json")
+    config = get_config()
+
+    cluster_imagecluster_r = get_cluster_assignments_json("rsc/" + config["dataset-reverse"])
+    cluster_imagecluster_a = get_cluster_assignments_json("rsc/" + config["dataset-obverse"])
     cluster_gt_neuses_r = get_cluster_assignments_csv("Stempelliste_bueschel_Neuses_einfach.csv", side="r")
     cluster_gt_neuses_a = get_cluster_assignments_csv("Stempelliste_bueschel_Neuses_einfach.csv", side="a")
 
-    ri_r, ari_r, ami_r = check_gt(cluster_imagecluster_r, cluster_gt_neuses_r)
-    ri_a, ari_a, ami_a = check_gt(cluster_imagecluster_a, cluster_gt_neuses_a)
+    ri_r, ari_r, ami_r = check_gt_file("rsc/" + config["dataset-reverse"])
+    ri_a, ari_a, ami_a = check_gt_file("rsc/" + config["dataset-obverse"])
     print("Reverse RI:", ri_r)
     print("Reverse ARI:", ari_r)
     print("Obverse RI:", ri_a)
@@ -150,9 +153,3 @@ if __name__ == "__main__":
         writer.writerow(["Id", "Av", "Rv"])
         for coin in intersect:
             writer.writerow([coin, cluster_imagecluster_a[coin],  cluster_imagecluster_r[coin]])
-
-    # ids = sorted(set(cluster_gt_neuses_r) & set(cluster_imagecluster_r))
-    # labels_true = [cluster_gt_neuses_r[cid] for cid in ids]
-    # labels_pred = [cluster_imagecluster_r[cid] for cid in ids]
-    # print(adjusted_mutual_info_score(labels_true, labels_pred))
-    # print(adjusted_rand_score(labels_true, labels_pred))

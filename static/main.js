@@ -6,6 +6,7 @@ let openInspector = async (id) => {
     $("#inspector-container").show();
     $("#inspector-heading").html(id);
     $("#inspector-comparison").html("");
+    $("#inspector-comparison-heading").show();
 
     let clusterData = await getRequest("cluster", { clusterId: id });
     console.log(clusterData);
@@ -23,6 +24,31 @@ let openInspector = async (id) => {
         sectionHtml += `</div>`;
         $("#coin-section").append(sectionHtml)
     }
+}
+
+let openInspectorFs = async (id) => {
+    $("#inspector-container").show();
+    $("#inspector-heading").html(id);
+    $("#inspector-comparison").html("");
+    $("#inspector-comparison-heading").hide();
+
+    // TODO
+    // let fsData = await getRequest("findspot", { fs: id });
+    // console.log(fsData);
+    $("#coin-section").html("");
+    /* for (let fs in fsData) {
+        let sectionHtml = `<h4 style="margin: 8px 0">${cluster}</h4><div class="grid">`;
+        for (let coin of fsData[fs]) {
+            sectionHtml += `
+                        <label class="sec flex coin-img-container">
+                        <img class="coin-img" alt="${coin}" src="coinimg?id=${coin}&side=${id.split("_")[1]}">
+                        <input type="checkbox" value="${coin}_${id.split("_")[1]}" name="compare-coins">${coin}
+                        </label>
+                    `;
+        }
+        sectionHtml += `</div>`;
+        $("#coin-section").append(sectionHtml)
+    } */
 }
 
 let openAnalysisDataPage = async () => {
@@ -51,6 +77,19 @@ let openAnalysisDataPage = async () => {
             </div>
             `);
     }
+}
+
+let loadGraphs = async () => {
+    const graph_data = await getRequest("graphdata", {});
+    console.log(graph_data);
+
+    const snaMetricsNode = await getRequest("snametricsnode", {})
+    const snaMetricsEdge = await getRequest("snametricsedge", {})
+
+    let chart = fdGraph(graph_data, snaMetricsNode, snaMetricsEdge);
+    $("#graph-container").html(chart);
+
+    initMap(graph_data, snaMetricsNode, snaMetricsEdge);
 }
 
 /**
@@ -91,6 +130,15 @@ $(() => {
         postRequest("configset", JSON.stringify({ key: key, value: value }));
     })
 
+    $("#start-sna").on("click", async (e) => {
+        $("#sna-check").hide();
+        $("#sna-spinner").show();
+        let response = await postRequest("snapipeline", JSON.stringify({}));
+        $("#sna-spinner").hide();
+        $("#sna-check").show();
+        loadGraphs();
+    })
+
     $("#close-inspector").on("click", () => {
         $("#inspector-container").hide();
     })
@@ -118,16 +166,7 @@ $(() => {
  * Start Script
  */
 $(async () => {
-    const graph_data = await getRequest("graphdata", {});
-    console.log(graph_data);
-
-    const snaMetricsNode = await getRequest("snametricsnode", {})
-    const snaMetricsEdge = await getRequest("snametricsedge", {})
-
-    let chart = fdGraph(graph_data, snaMetricsNode, snaMetricsEdge);
-    $("#graph-container").html(chart);
-
-    initMap(graph_data, snaMetricsNode, snaMetricsEdge);
+    loadGraphs();
 })
 
-export { openInspector }
+export { openInspector, openInspectorFs }
