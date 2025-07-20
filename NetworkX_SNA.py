@@ -106,7 +106,7 @@ def create_graph(edge_list, node_list, remove_low_degree_clusters, filter = []):
     #print(graph_export)'''
     return network_graph
 
-def network_Analysis(graph):
+def network_Analysis(graph, save_directory):
 
     
     degree_centrality = nx.degree_centrality(graph)
@@ -166,21 +166,27 @@ def network_Analysis(graph):
         })
     
 
-    #print(sna_metrics)
-    with open(r"SNA_results/node_sna_metrics.json", "w") as f:
+    node_path = os.path.join(r"SNA_results", save_directory, r"node_sna_metrics.json")
+    edge_path = os.path.join(r"SNA_results", save_directory, r"edge_sna_metrics.json")
+
+    os.makedirs(os.path.dirname(node_path), exist_ok=True)
+
+    with open(node_path, "w") as f:
         json.dump(sna_node_metrics, f, indent=2)
 
-    with open(r"SNA_results/edge_sna_metrics.json", "w") as f_2:
+    with open(edge_path, "w") as f_2:
         json.dump(sna_edge_metrics, f_2, indent=2)
 
 
-def get_subgraphs(graph):
+def get_subgraphs(graph, save_directory):
 
     directory = "subgraphs"
+    full_directory = os.path.join(directory, save_directory)
+    os.makedirs(os.path.dirname(full_directory), exist_ok=True)
 
-    if os.path.exists(directory):
-        shutil.rmtree(directory)  # removes all contents
-    os.makedirs(directory)
+    if os.path.exists(full_directory):
+        shutil.rmtree(full_directory)  # removes all contents
+    os.makedirs(full_directory)
     
     communities = list(greedy_modularity_communities(graph))
     communities = [community for community in communities if len(community) > 1]
@@ -203,18 +209,22 @@ def get_subgraphs(graph):
         nx.draw(subgraph, pos, with_labels = True, node_size=300)
         plt.title(f"Community_{counter}")
 
-        save_path = os.path.join(directory, f"Community_{counter}.png")
+        save_path = os.path.join(full_directory, f"Community_{counter}.png")
         plt.savefig(save_path)
         plt.close
-
-    with open(r"subgraphs/community_data.json", "w") as f:
+    json_path = os.path.join(full_directory, "community_data.json")
+    with open(json_path, "w") as f:
         json.dump(community_data, f, indent=2)
 
 
-def export_graph(graph):
+def export_graph(graph, save_directory):
     data1 = nx.node_link_data(graph, edges="edges")
     json_graph = json.dumps(data1, indent=4)
-    with open("networkx_export.json", "w") as f:
+    directory = os.path.join("graph_export", save_directory, "networkx_export.json")
+
+    os.makedirs(os.path.dirname(directory), exist_ok=True)
+
+    with open(directory, "w") as f:
         f.write(json_graph)
 
 
@@ -228,17 +238,40 @@ if __name__ == "__main__":
 
     short_edges = shorten_edges(edges)
 
-    NetworkX_Graph = create_graph(short_edges, nodes, True,["A","B"])
+    NetworkX_Graph = create_graph(short_edges, nodes, True)
 
-    network_Analysis(NetworkX_Graph)
+    network_Analysis(NetworkX_Graph, "full")
 
-    get_subgraphs(NetworkX_Graph)
-
-    #print(NetworkX_Graph.nodes["2009_r"])
-    #print(NetworkX_Graph.nodes["Manching"])
+    get_subgraphs(NetworkX_Graph, "full")
 
     print(NetworkX_Graph)
-    data1 = nx.node_link_data(NetworkX_Graph, edges="edges")
-    json_graph = json.dumps(data1, indent=4)
-    with open("networkx_export.json", "w") as f:
-        f.write(json_graph)
+    export_graph(NetworkX_Graph, "full")
+
+    NetworkX_Graph_A = create_graph(short_edges, nodes, True, ["A"])
+
+    network_Analysis(NetworkX_Graph_A, "A")
+
+    get_subgraphs(NetworkX_Graph_A, "A")
+
+    print(NetworkX_Graph_A)
+    export_graph(NetworkX_Graph_A, "A")
+
+    NetworkX_Graph_AB = create_graph(short_edges, nodes, True, ["A", "B"])
+
+    network_Analysis(NetworkX_Graph_AB, "AB")
+
+    get_subgraphs(NetworkX_Graph_AB, "AB")
+
+    print(NetworkX_Graph_A)
+    export_graph(NetworkX_Graph_AB, "AB")
+
+
+
+
+
+
+
+    #data1 = nx.node_link_data(NetworkX_Graph, edges="edges")
+    #json_graph = json.dumps(data1, indent=4)
+    #with open("networkx_export.json", "w") as f:
+    #    f.write(json_graph)
