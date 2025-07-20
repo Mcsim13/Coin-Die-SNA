@@ -90,9 +90,9 @@ def get_cluster_times(clusters, side):
     for cluster, coins in clusters.items():
         pattern = folder + "/**/" + coins[0] + "_*"
         paths = glob.glob(pattern, recursive=True)
-
+        
         search_split = paths[0][len(folder):]
-        time = re.search(r"/(\w+)/.+", search_split)
+        time = re.search(r"[\\/](\w+)[\\/].+", search_split)
         cluster_times[cluster] = time.group(1)
 
     return cluster_times
