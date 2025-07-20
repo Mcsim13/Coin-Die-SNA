@@ -4,6 +4,7 @@
 *.jpg
 *.jpeg
 *.xlsx
+.idea
 __pycache__
 SNA_results
 !config.json

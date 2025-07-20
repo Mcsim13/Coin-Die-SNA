@@ -22,7 +22,7 @@ def home():
 
 @app.route("/graphdata")
 def graphdata_api():
-    with open("networkx_export.json", "r") as f:
+    with open("graph_export/full/networkx_export.json", "r") as f:
         data = json.load(f)
     graph_data = jsonify(data)
     return graph_data
@@ -120,7 +120,7 @@ def coinmatching_img():
 
 @app.route("/snametricsnode")
 def snametrics_node():
-    with open("SNA_results/node_sna_metrics.json", "r") as f:
+    with open("SNA_results/full/node_sna_metrics.json", "r") as f:
         data = json.load(f)
     node_sna = jsonify(data)
     return node_sna
@@ -128,7 +128,7 @@ def snametrics_node():
 
 @app.route("/snametricsedge")
 def snametrics_edge():
-    with open("SNA_results/edge_sna_metrics.json", "r") as f:
+    with open("SNA_results/full/edge_sna_metrics.json", "r") as f:
         data = json.load(f)
     edge_sna = jsonify(data)
     return edge_sna
