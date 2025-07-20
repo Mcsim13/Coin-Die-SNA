@@ -1,7 +1,8 @@
 import json
+import shutil
 import networkx as nx
 import matplotlib.pyplot as plt
-#from pyvis.network import Network
+from pyvis.network import Network
 from jinja2 import Template
 import webbrowser
 import pandas as pd
@@ -22,11 +23,12 @@ def shorten_edges(edge_list):
     relevant_edges = [(e, f) for (e, f) in filtered_two_value_edge if not (pattern.match(e) and pattern.match(f))]
     return relevant_edges
 
-def create_graph(edge_list, node_list, remove_low_degree_clusters):
+def create_graph(edge_list, node_list, remove_low_degree_clusters, filter = []):
     network_graph = nx.Graph()
     edges = [("a","b"), ("b","c")]
     #print(edge_list)
     network_graph.add_edges_from(edge_list)
+
 
     if remove_low_degree_clusters == True:
         pattern = re.compile(r"^\d{1,4}_[a-zA-Z]$")
@@ -47,7 +49,8 @@ def create_graph(edge_list, node_list, remove_low_degree_clusters):
                     "cluster_id" : node_id,
                     "num_coins_in_cluster" : node[3],
                     "coins_in_cluster": node[4],
-                    "node_type" : node[5]
+                    "node_type" : node[5],
+                    "time_frame" : node[6]
                     }
             elif node[1] == "Findspot":
                 attributes[node_id] = {
@@ -60,9 +63,18 @@ def create_graph(edge_list, node_list, remove_low_degree_clusters):
                     }
     nx.set_node_attributes(network_graph, attributes)
 
+    if len(filter) > 0:
+        for filter_variable in filter:
+            removal_filter = [
+                entry for entry, attributes in network_graph.nodes(data=True)
+                if attributes.get("type") == "Cluster" and attributes.get("time_frame") == filter_variable
+            ]
+            print(removal_filter)
+            network_graph.remove_nodes_from(removal_filter)
+
     nx.draw(network_graph, with_labels=True)
     plt.show()
-    """ net = Network(height="800px", width="100%", notebook=False)
+    net = Network(height="800px", width="100%", notebook=False)
     net.from_nx(network_graph)
 
     
@@ -84,7 +96,7 @@ def create_graph(edge_list, node_list, remove_low_degree_clusters):
     clusters = list(nx.connected_components(network_graph)) 
     #print(clusters)
     #graph_export = (nx.connected_components(network_graph))
-    #print(graph_export) """
+    #print(graph_export)
     return network_graph
 
 def network_Analysis(graph):
@@ -156,10 +168,15 @@ def network_Analysis(graph):
 
 
 def get_subgraphs(graph):
+
+    directory = "subgraphs"
+
+    if os.path.exists(directory):
+        shutil.rmtree(directory)  # removes all contents
+    os.makedirs(directory)
     
     communities = list(greedy_modularity_communities(graph))
     communities = [community for community in communities if len(community) > 1]
-    directory = "subgraphs"
     community_data = []
 
     for counter, entry in enumerate(communities):
@@ -200,11 +217,11 @@ if __name__ == "__main__":
 
     nodes, edges = construct_graph_both_sides("rsc/" + config["dataset-reverse"], "rsc/" + config["dataset-obverse"])
 
-    print(nodes)
+    #print(nodes)
 
     short_edges = shorten_edges(edges)
 
-    NetworkX_Graph = create_graph(short_edges, nodes, True)
+    NetworkX_Graph = create_graph(short_edges, nodes, True, ["A", "B"])
 
     network_Analysis(NetworkX_Graph)
 

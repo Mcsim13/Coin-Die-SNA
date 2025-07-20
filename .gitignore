@@ -8,3 +8,4 @@ __pycache__
 SNA_results
 !config.json
 !static/logo.png
+config.json
