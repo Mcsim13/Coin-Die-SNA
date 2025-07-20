@@ -2,7 +2,7 @@ import json
 import shutil
 import networkx as nx
 import matplotlib.pyplot as plt
-from pyvis.network import Network
+#from pyvis.network import Network
 from jinja2 import Template
 import webbrowser
 import pandas as pd
@@ -69,12 +69,12 @@ def create_graph(edge_list, node_list, remove_low_degree_clusters, filter = []):
                 entry for entry, attributes in network_graph.nodes(data=True)
                 if attributes.get("type") == "Cluster" and attributes.get("time_frame") == filter_variable
             ]
-            print(removal_filter)
+            #print(removal_filter)
             network_graph.remove_nodes_from(removal_filter)
 
     nx.draw(network_graph, with_labels=True)
     plt.show()
-    net = Network(height="800px", width="100%", notebook=False)
+    '''net = Network(height="800px", width="100%", notebook=False)
     net.from_nx(network_graph)
 
     
@@ -96,7 +96,7 @@ def create_graph(edge_list, node_list, remove_low_degree_clusters, filter = []):
     clusters = list(nx.connected_components(network_graph)) 
     #print(clusters)
     #graph_export = (nx.connected_components(network_graph))
-    #print(graph_export)
+    #print(graph_export)'''
     return network_graph
 
 def network_Analysis(graph):
