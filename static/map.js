@@ -1,6 +1,6 @@
 import { mapGraph } from "./mapgraph.js"
 
-async function initMap(graphData, snaMetricsNode, snaMetricsEdge) {
+async function initMap(graphData, snaMetricsNode, snaMetricsEdge, communities) {
     const map = new L.Map("map-container", { zoomControl: false, dragging: true, zoomSnap: 0.05, zoomAnimation: false, fadeAnimation: false }).setView([48.029, 10.180], 7);
 
     const tiles = new L.TileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -19,7 +19,7 @@ async function initMap(graphData, snaMetricsNode, snaMetricsEdge) {
     graphData.nodes = graphData.nodes.filter(d => d.id !== "");
     graphData.edges = graphData.edges.filter(d => d.source !== "" && d.target !== "");
 
-    let svgGraph = mapGraph(graphData, svg, map, snaMetricsNode, snaMetricsEdge);
+    let svgGraph = mapGraph(graphData, svg, map, snaMetricsNode, snaMetricsEdge, communities);
 }
 
 export { initMap }

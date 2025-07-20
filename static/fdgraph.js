@@ -16,12 +16,13 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 function fdGraph(
-    data, snaMetricsNode, snaMetricsEdge
+    data, snaMetricsNode, snaMetricsEdge, communities
 ) {
     const width = 1000;
     const height = 600;
 
-    const color = d3.scaleOrdinal(d3.schemeCategory10);
+    const color = d3.scaleOrdinal(["Findspot", "Clusterr", "Clustera"], ["#0ec253ff", "#1c4ee4ff", "#08b7dfff"]);
+    const colorLinks = d3.scaleOrdinal(d3.quantize(d3.interpolateTurbo, communities.length + 1));
 
     const links = data.edges.map(d => ({ ...d }));
     const nodes = data.nodes.map(d => ({ ...d }));
@@ -39,6 +40,15 @@ function fdGraph(
         for (let elem of snaMetricsEdge) {
             if ((elem.From === edge.source && elem.To === edge.target) || (elem.From === edge.target && elem.To === edge.source)) {
                 edge.betweenness_centrality = elem.edge_betweeness_centrality;
+            }
+        }
+
+        for (let community of communities) {
+            for (let elem of community.edges) {
+                if ((elem[0] === edge.source && elem[1] === edge.target) || (elem[0] === edge.target && elem[1] === edge.source)) {
+                    edge.community = community.id;
+                    break;
+                }
             }
         }
     })
@@ -60,11 +70,11 @@ function fdGraph(
     const g = svg.append("g");
 
     const link = g.append("g")
-        .attr("stroke", "#999")
-        .attr("stroke-opacity", 0.6)
+        .attr("stroke-opacity", 0.7)
         .selectAll()
         .data(links)
         .join("line")
+        .attr("stroke", d => colorLinks(d.community) /* "#999" */)
         .attr("stroke-width", d => 1 + Math.sqrt(d.betweenness_centrality * 1000));
 
     const node = g.append("g")
@@ -103,7 +113,7 @@ function fdGraph(
     node.on("click", (e) => {
         let id = e.currentTarget.id;
         let type = data.nodes.filter(d => d.id === id)[0].type;
-        
+
         if (type === "Cluster") {
             openInspector(id);
         } else {
@@ -113,9 +123,9 @@ function fdGraph(
         link.attr("class", "");
         let connectedLinks = link.filter(d => d.source.id == id || d.target.id == id)
             .attr("class", "sel");
-        
+
         let connectedEdges = links.filter(d => d.source.id == id || d.target.id == id);
-        
+
         for (let connection of connectedEdges) {
             let otherNode = connection.source.id != id ? connection.source : connection.target;
             if (otherNode.type == "Findspot") continue;

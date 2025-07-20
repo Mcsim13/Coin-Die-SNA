@@ -16,9 +16,10 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 function mapGraph(
-    data, svg, map, snaMetricsNode, snaMetricsEdge
+    data, svg, map, snaMetricsNode, snaMetricsEdge, communities
 ) {
-    const color = d3.scaleOrdinal(d3.schemeCategory10);
+    const color = d3.scaleOrdinal(["Findspot", "Clusterr", "Clustera"], ["#0ec253ff", "#1c4ee4ff", "#08b7dfff"]);
+    const colorLinks = d3.scaleOrdinal(d3.quantize(d3.interpolateTurbo, communities.length + 1));
 
     const links = data.edges.map(d => ({ ...d }));
     const nodes = data.nodes.map(d => ({ ...d })).filter(d => d.type == "Cluster");
@@ -51,6 +52,15 @@ function mapGraph(
 
             }
         }
+
+        for (let community of communities) {
+            for (let elem of community.edges) {
+                if ((elem[0] === edge.source && elem[1] === edge.target) || (elem[0] === edge.target && elem[1] === edge.source)) {
+                    edge.community = community.id;
+                    break;
+                }
+            }
+        }
     })
 
     const simulation = d3.forceSimulation([...nodes, ...fsNodes])
@@ -65,11 +75,11 @@ function mapGraph(
     const g = svg.select("g");
 
     const link = g.append("g")
-        .attr("stroke", "#444")
-        .attr("stroke-opacity", 0.6)
+        .attr("stroke-opacity", 0.7)
         .selectAll()
         .data(links)
         .join("line")
+        .attr("stroke", d => colorLinks(d.community) /* "#444" */)
         .attr("stroke-width", d => 1 + Math.sqrt(d.betweenness_centrality * 1000));
 
     const node = g.append("g")

@@ -86,10 +86,12 @@ let loadGraphs = async () => {
     const snaMetricsNode = await getRequest("snametricsnode", {})
     const snaMetricsEdge = await getRequest("snametricsedge", {})
 
-    let chart = fdGraph(graph_data, snaMetricsNode, snaMetricsEdge);
+    const communities = await getRequest("communities", {})
+
+    let chart = fdGraph(graph_data, snaMetricsNode, snaMetricsEdge, communities);
     $("#graph-container").html(chart);
 
-    initMap(graph_data, snaMetricsNode, snaMetricsEdge);
+    initMap(graph_data, snaMetricsNode, snaMetricsEdge, communities);
 }
 
 /**

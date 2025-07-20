@@ -134,5 +134,13 @@ def snametrics_edge():
     return edge_sna
 
 
+@app.route("/communities")
+def communities():
+    with open("subgraphs/full/community_data.json", "r") as f:
+        data = json.load(f)
+    communities = jsonify(data)
+    return communities
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port="5001", debug=True)
