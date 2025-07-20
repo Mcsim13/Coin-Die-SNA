@@ -63,14 +63,21 @@ def create_graph(edge_list, node_list, remove_low_degree_clusters, filter = []):
                     }
     nx.set_node_attributes(network_graph, attributes)
 
-    if len(filter) > 0:
-        for filter_variable in filter:
-            removal_filter = [
-                entry for entry, attributes in network_graph.nodes(data=True)
-                if attributes.get("type") == "Cluster" and attributes.get("time_frame") == filter_variable
-            ]
+    #if len(filter) > 0:
+    #    for filter_variable in filter:
+    #        removal_filter = [
+    #            entry for entry, attributes in network_graph.nodes(data=True)
+    #            if attributes.get("type") == "Cluster" and attributes.get("time_frame") == filter_variable
+    #        ]
             #print(removal_filter)
-            network_graph.remove_nodes_from(removal_filter)
+    #        network_graph.remove_nodes_from(removal_filter)
+
+    if len(filter) > 0:
+        removal_filter = [
+            entry for entry, attributes in network_graph.nodes(data=True)
+            if attributes.get("type") == "Cluster" and attributes.get("time_frame") not in filter
+        ]
+        network_graph.remove_nodes_from(removal_filter)
 
     nx.draw(network_graph, with_labels=True)
     plt.show()
@@ -221,7 +228,7 @@ if __name__ == "__main__":
 
     short_edges = shorten_edges(edges)
 
-    NetworkX_Graph = create_graph(short_edges, nodes, True, ["A", "B"])
+    NetworkX_Graph = create_graph(short_edges, nodes, True,["A","B"])
 
     network_Analysis(NetworkX_Graph)
 
