@@ -5,8 +5,10 @@ from check_gt import check_gt_file
 from config import analysis_files, get_config, set_config
 from main import social_network_analysis_pipeline
 from cluster_to_graph import imagecluster_get_cluster, get_coin_findspots, map_clusters_to_findspots, plot_coint_per_die
+
 try:
     from matching_plot import get_matches_plot
+
     auto_die_studies_available = True
 except ImportError:
     auto_die_studies_available = False

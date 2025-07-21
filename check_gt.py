@@ -127,7 +127,10 @@ def check_gt(cluster_pred, cluster_true):
 
 def check_gt_file(pred_file, coin_side):
     cluster_imagecluster = get_cluster_assignments_json(pred_file)
-    cluster_gt_neuses = get_cluster_assignments_csv("Stempelliste_bueschel_Neuses_einfach.csv", side=coin_side)
+    try:
+        cluster_gt_neuses = get_cluster_assignments_csv("die_ground_truth.csv", side=coin_side)
+    except FileNotFoundError:
+        return (0, 0, 0)
 
     return check_gt(cluster_imagecluster, cluster_gt_neuses)
 
@@ -137,8 +140,8 @@ if __name__ == "__main__":
 
     cluster_imagecluster_r = get_cluster_assignments_json("rsc/" + config["dataset-reverse"])
     cluster_imagecluster_a = get_cluster_assignments_json("rsc/" + config["dataset-obverse"])
-    cluster_gt_neuses_r = get_cluster_assignments_csv("Stempelliste_bueschel_Neuses_einfach.csv", side="r")
-    cluster_gt_neuses_a = get_cluster_assignments_csv("Stempelliste_bueschel_Neuses_einfach.csv", side="a")
+    cluster_gt_neuses_r = get_cluster_assignments_csv("die_ground_truth.csv", side="r")
+    cluster_gt_neuses_a = get_cluster_assignments_csv("die_ground_truth.csv", side="a")
 
     ri_r, ari_r, ami_r = check_gt_file("rsc/" + config["dataset-reverse"])
     ri_a, ari_a, ami_a = check_gt_file("rsc/" + config["dataset-obverse"])
