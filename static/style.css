@@ -146,3 +146,13 @@ img.matching-img {
         fill: darkblue;
     }
 }
+
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: var(--background-lighten-medium);
+    color: var(--primary-text-color);
+    padding: 6px;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+}

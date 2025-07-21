@@ -26,9 +26,7 @@ def home():
 def graphdata_api():
     filterTime = request.args.get("filterTime", "")
     filterAvRv = request.args.get("filterAvRv", "")
-    print(filterTime)
-    print(filterAvRv)
-    with open("graph_export/" + filterTime + "/networkx_export.json", "r") as f:
+    with open("graph_export/" + filterTime + "_" + filterAvRv + "/networkx_export.json", "r") as f:
         data = json.load(f)
     graph_data = jsonify(data)
     return graph_data
@@ -74,9 +72,13 @@ def start_sna_pipeline():
     print(data)
     filterTime = data.get("filterTime")
     filterAvRv = data.get("filterAvRv")
-    social_network_analysis_pipeline(filterTime, filterAvRv)
+    try:
+        social_network_analysis_pipeline(filterTime, filterAvRv)
+    except:
+        print("==========", "ERROR in SNA pipline of " + filterTime + "_" + filterAvRv, "==========", sep="\n")
+        return jsonify({"text": filterTime + "_" + filterAvRv + " - ERROR"})
 
-    return jsonify({"text": filterTime})
+    return jsonify({"text": filterTime + "_" + filterAvRv})
 
 
 @app.route("/cluster")
@@ -132,7 +134,7 @@ def coinmatching_img():
 def snametrics_node():
     filterTime = request.args.get("filterTime", "")
     filterAvRv = request.args.get("filterAvRv", "")
-    with open("SNA_results/" + filterTime + "/node_sna_metrics.json", "r") as f:
+    with open("SNA_results/" + filterTime + "_" + filterAvRv + "/node_sna_metrics.json", "r") as f:
         data = json.load(f)
     node_sna = jsonify(data)
     return node_sna
@@ -142,7 +144,7 @@ def snametrics_node():
 def snametrics_edge():
     filterTime = request.args.get("filterTime", "")
     filterAvRv = request.args.get("filterAvRv", "")
-    with open("SNA_results/" + filterTime + "/edge_sna_metrics.json", "r") as f:
+    with open("SNA_results/" + filterTime + "_" + filterAvRv + "/edge_sna_metrics.json", "r") as f:
         data = json.load(f)
     edge_sna = jsonify(data)
     return edge_sna
@@ -152,7 +154,7 @@ def snametrics_edge():
 def communities():
     filterTime = request.args.get("filterTime", "")
     filterAvRv = request.args.get("filterAvRv", "")
-    with open("subgraphs/" + filterTime + "/community_data.json", "r") as f:
+    with open("subgraphs/" + filterTime + "_" + filterAvRv + "/community_data.json", "r") as f:
         data = json.load(f)
     communities = jsonify(data)
     return communities

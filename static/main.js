@@ -84,17 +84,15 @@ let openAnalysisDataPage = async () => {
 let loadGraphs = async () => {
     let time = $("#time-control").val();
     time = timeMap[time];
-    let avrv = "a";
-
-    console.log(time);
+    let avrv = $("#avrvfilter").val();
     
-    const graph_data = await getRequest("graphdata", { filterTime: time, filterAvRv: "-" });
+    const graph_data = await getRequest("graphdata", { filterTime: time, filterAvRv: avrv });
     console.log(graph_data);
 
-    const snaMetricsNode = await getRequest("snametricsnode", { filterTime: time, filterAvRv: "-" })
-    const snaMetricsEdge = await getRequest("snametricsedge", { filterTime: time, filterAvRv: "-" })
+    const snaMetricsNode = await getRequest("snametricsnode", { filterTime: time, filterAvRv: avrv })
+    const snaMetricsEdge = await getRequest("snametricsedge", { filterTime: time, filterAvRv: avrv })
 
-    const communities = await getRequest("communities", { filterTime: time, filterAvRv: "-" })
+    const communities = await getRequest("communities", { filterTime: time, filterAvRv: avrv })
 
     let chart = fdGraph(graph_data, snaMetricsNode, snaMetricsEdge, communities);
     $("#graph-container").html(chart);
@@ -143,20 +141,28 @@ $(() => {
     $("#start-sna").on("click", async (e) => {
         $("#sna-check").hide();
         $("#sna-spinner").show();
-        let time = $("#time-control").val();
-        time = timeMap[time];
-        let avrv = "a";
-        const promises = Object.values(timeMap).map(val => postRequest("snapipeline", JSON.stringify({ filterTime: val, filterAvRv: "" })));
-        const responses = await Promise.all(promises);
-        console.log(responses);
+        const promisesAvRv = Object.values(timeMap).map(val => postRequest("snapipeline", JSON.stringify({ filterTime: val, filterAvRv: "" })));
+        const responsesAvRv = await Promise.all(promisesAvRv);
+        console.log(responsesAvRv);
+
+        const promisesAv = Object.values(timeMap).map(val => postRequest("snapipeline", JSON.stringify({ filterTime: val, filterAvRv: "a" })));
+        const responsesAv = await Promise.all(promisesAv);
+        console.log(responsesAv);
+
+        const promisesRv = Object.values(timeMap).map(val => postRequest("snapipeline", JSON.stringify({ filterTime: val, filterAvRv: "r" })));
+        const responsesRv = await Promise.all(promisesRv);
+        console.log(responsesRv);
         
-        // let response = await postRequest("snapipeline", JSON.stringify({ filterTime: time, filterAvRv: "" }));
         $("#sna-spinner").hide();
         $("#sna-check").show();
         loadGraphs();
     })
 
     $("#time-control").on("change", () => {
+        loadGraphs();
+    })
+
+    $("#avrvfilter").on("change", () => {
         loadGraphs();
     })
 

@@ -71,7 +71,15 @@
                 </div>
             </div>
             <div id="toolbar">
-                <div class="flex">
+                <div class="flex" style="align-items: center;">
+                    <div style="padding: 0 4px; position: relative;">
+                        <select id="avrvfilter" name="avrvfilter" style="width: 80px;">
+                            <option value="">Av + Rv</option>
+                            <option value="a">Av</option>
+                            <option value="r">Rv</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down" style="position: absolute; right: 16px; top: 6px; pointer-events: none;"></i>
+                    </div>
                     <div style="height: 32px; padding: 0 8px;">
                         <div class="flex" style="font-size: 10px; justify-content: space-around; line-height: 1;">
                             <label>X</label>
@@ -87,7 +95,8 @@
                             <label>U</label>
                         </div>
                         <div>
-                            <input type="range" id="time-control" name="time" list="times" min="0" max="10" step="1" value="0" style="width: 200px;">
+                            <input type="range" id="time-control" name="time" list="times" min="0" max="10" step="1"
+                                value="0" style="width: 200px;">
                             <datalist id="times">
                                 <option value="0" label="X"></option>
                                 <option value="1" label="A"></option>
