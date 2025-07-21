@@ -8,7 +8,8 @@ div#tabbar-container {
     gap: 16px;
 }
 
-div#tabbar {
+div#tabbar,
+div#toolbar {
     border-radius: 20px;
     background: var(--background-color-medium);
     backdrop-filter: blur(8px) saturate(120%);

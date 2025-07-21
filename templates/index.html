@@ -11,10 +11,10 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
         integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"/>
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/2.0.0-alpha/leaflet.css"
         integrity="sha512-LPN9LDgfRWOAI5NzflmV0UmS9D2rz1/LVMX9uv1CJXmVopPOuoHtimoYHTI6XEfO0Ck2sUZzsv2/F7HroX5i6A=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"/>
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -67,6 +67,41 @@
                     <div>
                         <button class="plain" id="appearance" style="width: 32px; padding: 6px"><i
                                 class="fa-regular fa-moon"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div id="toolbar">
+                <div class="flex">
+                    <div style="height: 32px; padding: 0 8px;">
+                        <div class="flex" style="font-size: 10px; justify-content: space-around; line-height: 1;">
+                            <label>X</label>
+                            <label>A</label>
+                            <label>B</label>
+                            <label>C</label>
+                            <label>D</label>
+                            <label>E</label>
+                            <label>F</label>
+                            <label>G</label>
+                            <label>H</label>
+                            <label>P</label>
+                            <label>U</label>
+                        </div>
+                        <div>
+                            <input type="range" id="time-control" name="time" list="times" min="0" max="10" step="1" value="0" style="width: 200px;">
+                            <datalist id="times">
+                                <option value="0" label="X"></option>
+                                <option value="1" label="A"></option>
+                                <option value="2" label="B"></option>
+                                <option value="3" label="C"></option>
+                                <option value="4" label="D"></option>
+                                <option value="5" label="E"></option>
+                                <option value="6" label="F"></option>
+                                <option value="7" label="G"></option>
+                                <option value="8" label="H"></option>
+                                <option value="9" label="Prot"></option>
+                                <option value="10" label="undefined"></option>
+                            </datalist>
+                        </div>
                     </div>
                 </div>
             </div>

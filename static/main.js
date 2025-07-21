@@ -2,6 +2,8 @@ import { getRequest, postRequest } from "./utils.js"
 import { fdGraph } from "./fdgraph.js"
 import { initMap } from "./map.js"
 
+let timeMap = { 0: "X", 1: "A", 2: "B", 3: "C", 4: "D", 5: "E", 6: "F", 7: "G", 8: "H", 9: "P", 10: "U" };
+
 let openInspector = async (id) => {
     $("#inspector-container").show();
     $("#inspector-heading").html(id);
@@ -80,13 +82,19 @@ let openAnalysisDataPage = async () => {
 }
 
 let loadGraphs = async () => {
-    const graph_data = await getRequest("graphdata", {});
+    let time = $("#time-control").val();
+    time = timeMap[time];
+    let avrv = "a";
+
+    console.log(time);
+    
+    const graph_data = await getRequest("graphdata", { filterTime: time, filterAvRv: "-" });
     console.log(graph_data);
 
-    const snaMetricsNode = await getRequest("snametricsnode", {})
-    const snaMetricsEdge = await getRequest("snametricsedge", {})
+    const snaMetricsNode = await getRequest("snametricsnode", { filterTime: time, filterAvRv: "-" })
+    const snaMetricsEdge = await getRequest("snametricsedge", { filterTime: time, filterAvRv: "-" })
 
-    const communities = await getRequest("communities", {})
+    const communities = await getRequest("communities", { filterTime: time, filterAvRv: "-" })
 
     let chart = fdGraph(graph_data, snaMetricsNode, snaMetricsEdge, communities);
     $("#graph-container").html(chart);
@@ -135,9 +143,20 @@ $(() => {
     $("#start-sna").on("click", async (e) => {
         $("#sna-check").hide();
         $("#sna-spinner").show();
-        let response = await postRequest("snapipeline", JSON.stringify({}));
+        let time = $("#time-control").val();
+        time = timeMap[time];
+        let avrv = "a";
+        const promises = Object.values(timeMap).map(val => postRequest("snapipeline", JSON.stringify({ filterTime: val, filterAvRv: "" })));
+        const responses = await Promise.all(promises);
+        console.log(responses);
+        
+        // let response = await postRequest("snapipeline", JSON.stringify({ filterTime: time, filterAvRv: "" }));
         $("#sna-spinner").hide();
         $("#sna-check").show();
+        loadGraphs();
+    })
+
+    $("#time-control").on("change", () => {
         loadGraphs();
     })
 

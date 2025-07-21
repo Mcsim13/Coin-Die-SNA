@@ -22,7 +22,11 @@ def home():
 
 @app.route("/graphdata")
 def graphdata_api():
-    with open("graph_export/full/networkx_export.json", "r") as f:
+    filterTime = request.args.get("filterTime", "")
+    filterAvRv = request.args.get("filterAvRv", "")
+    print(filterTime)
+    print(filterAvRv)
+    with open("graph_export/" + filterTime + "/networkx_export.json", "r") as f:
         data = json.load(f)
     graph_data = jsonify(data)
     return graph_data
@@ -64,9 +68,13 @@ def config_set_api():
 
 @app.route("/snapipeline", methods=["POST"])
 def start_sna_pipeline():
-    social_network_analysis_pipeline()
+    data = json.loads(request.data)
+    print(data)
+    filterTime = data.get("filterTime")
+    filterAvRv = data.get("filterAvRv")
+    social_network_analysis_pipeline(filterTime, filterAvRv)
 
-    return jsonify({"text": "ok"})
+    return jsonify({"text": filterTime})
 
 
 @app.route("/cluster")
@@ -120,7 +128,9 @@ def coinmatching_img():
 
 @app.route("/snametricsnode")
 def snametrics_node():
-    with open("SNA_results/full/node_sna_metrics.json", "r") as f:
+    filterTime = request.args.get("filterTime", "")
+    filterAvRv = request.args.get("filterAvRv", "")
+    with open("SNA_results/" + filterTime + "/node_sna_metrics.json", "r") as f:
         data = json.load(f)
     node_sna = jsonify(data)
     return node_sna
@@ -128,7 +138,9 @@ def snametrics_node():
 
 @app.route("/snametricsedge")
 def snametrics_edge():
-    with open("SNA_results/full/edge_sna_metrics.json", "r") as f:
+    filterTime = request.args.get("filterTime", "")
+    filterAvRv = request.args.get("filterAvRv", "")
+    with open("SNA_results/" + filterTime + "/edge_sna_metrics.json", "r") as f:
         data = json.load(f)
     edge_sna = jsonify(data)
     return edge_sna
@@ -136,7 +148,9 @@ def snametrics_edge():
 
 @app.route("/communities")
 def communities():
-    with open("subgraphs/full/community_data.json", "r") as f:
+    filterTime = request.args.get("filterTime", "")
+    filterAvRv = request.args.get("filterAvRv", "")
+    with open("subgraphs/" + filterTime + "/community_data.json", "r") as f:
         data = json.load(f)
     communities = jsonify(data)
     return communities

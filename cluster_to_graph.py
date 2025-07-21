@@ -1,9 +1,9 @@
 import json
 import csv
+import os.path
 from findspot_geolocation import get_findspot_coordinate
 from config import get_config
 import glob
-import re
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -85,14 +85,18 @@ def get_cluster_times(clusters, side):
     config = get_config()
     folder = config["images-reverse"] if side == "r" else config["images-obverse"]
 
-    cluster_times = {}
+    img_paths = glob.glob(folder + "/**/*")
 
+    coin_times = {}
+    for path in img_paths:
+        img_file = os.path.basename(path)
+        time = os.path.basename(os.path.dirname(path))
+        img_id = img_file.split("_")[0]
+        coin_times[img_id] = time
+
+    cluster_times = {}
     for cluster, coins in clusters.items():
-        pattern = folder + "/**/" + coins[0] + "_*"
-        paths = glob.glob(pattern, recursive=True)
-        search_split = paths[0][len(folder):]
-        time = re.search(r"[\\/](\w+)[\\/].+", search_split)
-        cluster_times[cluster] = time.group(1)
+        cluster_times[cluster] = coin_times[coins[0]]
 
     return cluster_times
 
