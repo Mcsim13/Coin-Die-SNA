@@ -74,6 +74,12 @@ div#inspector-body {
     overflow: scroll;
 }
 
+div#sna-section {
+    background: var(--background-lighten-weak);
+    border-radius: 8px;
+    padding: 8px;
+}
+
 div#inspector-comparison {
     margin-bottom: 16px;
     background: #000;

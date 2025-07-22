@@ -4,7 +4,8 @@ import glob
 from check_gt import check_gt_file
 from config import analysis_files, get_config, set_config
 from main import social_network_analysis_pipeline
-from cluster_to_graph import imagecluster_get_cluster, get_coin_findspots, map_clusters_to_findspots, plot_coint_per_die
+from cluster_to_graph import imagecluster_get_cluster, get_coin_findspots, map_clusters_to_findspots, plot_coint_per_die, map_findspots_to_clusters
+from findspot_geolocation import get_findspot_osmtypeid
 
 try:
     from matching_plot import get_matches_plot
@@ -93,6 +94,26 @@ def cluster_api():
     clusters_at_findspot = map_clusters_to_findspots(clusters, coin_findspots)
 
     return jsonify(clusters_at_findspot[cluster_id])
+
+
+@app.route("/findspot")
+def findspot_api():
+    findspot = request.args.get("fs", "")
+
+    config = get_config()
+    clusters_r = imagecluster_get_cluster("rsc/" + config["dataset-reverse"], "r")
+    clusters_a = imagecluster_get_cluster("rsc/" + config["dataset-obverse"], "a")
+    clusters = clusters_r | clusters_a
+    coin_findspots = get_coin_findspots()
+    cluster_at_fs = map_findspots_to_clusters(clusters, coin_findspots, findspot)
+
+    return jsonify(cluster_at_fs)
+
+
+@app.route("/findspotosm")
+def findspotosm_api():
+    findspot = request.args.get("fs", "")
+    return jsonify(get_findspot_osmtypeid(findspot))
 
 
 @app.route("/coinimg")

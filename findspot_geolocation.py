@@ -50,7 +50,6 @@ def get_findspot_coordinate(findspot):
         pass
 
     split_name = re.split(r"[ -]", findspot)
-    # print(split_name)
     for i in range(len(split_name)):
         findspot_alt = split_name[i]
         try:
@@ -64,6 +63,31 @@ def get_findspot_coordinate(findspot):
 
     print("Not found:", findspot)
     return (0, 0)
+
+
+def get_findspot_osmtypeid(findspot):
+    try:
+        geojson = get_findspot_geojson(findspot)
+        osmtype = geojson["features"][0]["properties"]["osm_type"]
+        osmid = geojson["features"][0]["properties"]["osm_id"]
+        return osmtype + "/" + str(osmid)
+    except IndexError:
+        pass
+
+    split_name = re.split(r"[ -]", findspot)
+    for i in range(len(split_name)):
+        findspot_alt = split_name[i]
+        try:
+            geojson = get_findspot_geojson(findspot_alt)
+            osmtype = geojson["features"][0]["properties"]["osm_type"]
+            osmid = geojson["features"][0]["properties"]["osm_id"]
+            print("Found alternative:", findspot_alt, "| instead of:", findspot)
+            return osmtype + "/" + str(osmid)
+        except IndexError:
+            pass
+
+    print("Not found:", findspot)
+    return ""
 
 
 if __name__ == "__main__":

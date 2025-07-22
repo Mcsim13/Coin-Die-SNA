@@ -3,15 +3,41 @@ import { fdGraph } from "./fdgraph.js"
 import { initMap } from "./map.js"
 
 let timeMap = { 0: "X", 1: "A", 2: "B", 3: "C", 4: "D", 5: "E", 6: "F", 7: "G", 8: "H", 9: "P", 10: "U" };
+let snaMetricsNode;
+
+let snaMetricSection = (snaMetrics) => {
+    let snaHtml = /*html*/`
+    <label>${snaMetrics.num_edges}</label>
+    <label class="sec">degree</label>
+    <label class="sep">|</label>
+    <label>${snaMetrics.pagerank.toFixed(2)}</label>
+    <label class="sec">pagerank</label>
+    <label class="sep">|</label>
+    <label>${snaMetrics.av_neighbor_degree.toFixed(0)}</label>
+    <label class="sec">avg neighbor degree</label>
+    <div class="line"></div>
+    <label>${snaMetrics.degree_centrality.toFixed(2)}</label>
+    <label class="sec">degree centrality</label><br>
+    <label>${snaMetrics.betweenness_centrality.toFixed(2)}</label>
+    <label class="sec">betweenness centrality</label><br>
+    <label>${snaMetrics.closeness_centrality.toFixed(2)}</label>
+    <label class="sec">closeness centrality</label>
+    `;
+    return snaHtml;
+}
 
 let openInspector = async (id) => {
     $("#inspector-container").show();
     $("#inspector-heading").html(id);
     $("#inspector-comparison").html("");
-    $("#inspector-comparison-heading").show();
 
     let clusterData = await getRequest("cluster", { clusterId: id });
     console.log(clusterData);
+
+    let snaMetrics = snaMetricsNode.find(d => d.node === id);
+    let snaHtml = snaMetricSection(snaMetrics)
+    $("#sna-section").html(snaHtml);
+
     $("#coin-section").html("");
     for (let fs in clusterData) {
         let sectionHtml = /*html*/`<h4 style="margin: 8px 0">${fs}</h4><div class="grid">`;
@@ -30,27 +56,33 @@ let openInspector = async (id) => {
 
 let openInspectorFs = async (id) => {
     $("#inspector-container").show();
-    $("#inspector-heading").html(id);
     $("#inspector-comparison").html("");
-    $("#inspector-comparison-heading").hide();
+    
+    let fsData = await getRequest("findspot", { fs: id });
+    let fsOsm = await getRequest("findspotosm", { fs: id });
+    console.log(fsData);
 
-    // TODO
-    // let fsData = await getRequest("findspot", { fs: id });
-    // console.log(fsData);
+    $("#inspector-heading").html(`<a href="https://openstreetmap.org/${fsOsm}" target="_blank">${id}</a>`);
+
+    let snaMetrics = snaMetricsNode.find(d => d.node === id);
+    let snaHtml = snaMetricSection(snaMetrics)
+    $("#sna-section").html(snaHtml);
+    console.log(snaMetrics);
+
     $("#coin-section").html("");
-    /* for (let fs in fsData) {
-        let sectionHtml = `<h4 style="margin: 8px 0">${cluster}</h4><div class="grid">`;
-        for (let coin of fsData[fs]) {
-            sectionHtml += `
+    for (let cluster in fsData) {
+        let sectionHtml = /*html*/`<h4 style="margin: 8px 0">Coins of findspot in ${cluster}</h4><div class="grid">`;
+        for (let coin of fsData[cluster]) {
+            sectionHtml += /*html*/`
                         <label class="sec flex coin-img-container">
-                        <img class="coin-img" alt="${coin}" src="coinimg?id=${coin}&side=${id.split("_")[1]}">
-                        <input type="checkbox" value="${coin}_${id.split("_")[1]}" name="compare-coins">${coin}
+                        <img class="coin-img" alt="${coin}" src="coinimg?id=${coin}&side=${cluster.split("_")[1]}">
+                        <input type="checkbox" value="${coin}_${cluster.split("_")[1]}" name="compare-coins">${coin}
                         </label>
                     `;
         }
         sectionHtml += `</div>`;
         $("#coin-section").append(sectionHtml)
-    } */
+    }
 }
 
 let openAnalysisDataPage = async () => {
@@ -89,7 +121,7 @@ let loadGraphs = async () => {
     const graph_data = await getRequest("graphdata", { filterTime: time, filterAvRv: avrv });
     console.log(graph_data);
 
-    const snaMetricsNode = await getRequest("snametricsnode", { filterTime: time, filterAvRv: avrv })
+    snaMetricsNode = await getRequest("snametricsnode", { filterTime: time, filterAvRv: avrv })
     const snaMetricsEdge = await getRequest("snametricsedge", { filterTime: time, filterAvRv: avrv })
 
     const communities = await getRequest("communities", { filterTime: time, filterAvRv: avrv })

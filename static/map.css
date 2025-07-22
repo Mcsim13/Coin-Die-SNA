@@ -21,7 +21,7 @@
 #graph-container svg line.sel {
     stroke-opacity: 1;
     stroke-width: 3;
-    stroke: var(--main-accent-color);
+    stroke: rgb(243, 37, 102);
 }
 
 div.leaflet-control-zoom.leaflet-bar.leaflet-control {

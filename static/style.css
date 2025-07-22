@@ -60,6 +60,11 @@ label.sec {
     font-size: 12px;
 }
 
+label.sep {
+    color: var(--secondary-text-color);
+    margin: 8px;
+}
+
 h1,
 h2,
 h3,
@@ -69,9 +74,18 @@ h5 {
     font-weight: 500;
 }
 
+a {
+    color: var(--main-accent-color);
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
 .line {
-    border-top: 1px solid var(--border-color);
-    margin: 0 32px;
+    border-top: 1px solid var(--secondary-text-color);
+    margin: 8px 0;
 }
 
 .flex {
@@ -84,7 +98,6 @@ h5 {
 
 .list {
     background: var(--full-color);
-    /* background: var(--background-color-weak); */
     border: 1px solid var(--border-color);
     border-radius: 16px;
     overflow: hidden;
@@ -99,7 +112,7 @@ h5 {
     border-bottom: 1px solid var(--border-color);
     
     &:hover {
-        background: var(--background-lighten-weak);
+        background: var(--body-color);
     }
     
     &>div.flex {
@@ -141,7 +154,6 @@ img.matching-img {
 }
 
 .graph-container svg .node {
-
     &:hover circle {
         fill: darkblue;
     }
@@ -150,7 +162,7 @@ img.matching-img {
 select {
     appearance: none;
     -webkit-appearance: none;
-    background-color: var(--background-lighten-medium);
+    background-color: var(--background-lighten-weak);
     color: var(--primary-text-color);
     padding: 6px;
     border: 1px solid var(--border-color);

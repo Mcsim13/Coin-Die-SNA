@@ -5,6 +5,7 @@ from findspot_geolocation import get_findspot_coordinate
 from config import get_config
 import glob
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import io
@@ -67,6 +68,29 @@ def map_clusters_to_findspots(clusters, coin_findspots):
         clusters_at_findspot[cluster] = coins_at_fs
 
     return clusters_at_findspot
+
+
+def map_findspots_to_clusters(clusters, coin_findspots, findspot):
+    """
+    Returns { findspot: { cluster_id: [coind_id] } }
+    clusters: { cluster_id : [coin_id] }
+    coin_findspots: { coind_id: findspot }
+    findspots: single findspot name
+    """
+    cluster_at_fs = {}
+    for cluster, coins in clusters.items():
+        if len(coins) <= 1:
+            continue
+
+        coins_of_fs = []
+        for coin in coins:
+            if coin_findspots.get(coin) == findspot:
+                coins_of_fs.append(coin)
+
+        if len(coins_of_fs) > 0:
+            cluster_at_fs[cluster] = coins_of_fs
+
+    return cluster_at_fs
 
 
 def connect_nodes_pairwise(node_list, name_prefix=""):
