@@ -10,6 +10,8 @@ from config import get_config
 
 
 def shorten_edges(edge_list):
+    '''Some coins have unknown findspots. This in turn leads to some edges lying between a coin-cluster and an empry string. To prevent having the unknown findspot also as node
+    in the chart this function is used to filter those edges out before creating the NetworkX chart'''
     two_values_edge = [(a, b) for (a, b, _) in edge_list]
     pattern = re.compile(r"^\d{1,4}_[a-zA-Z]$")
     # remove Edges where one of the nodes is '' (Ignoring Clusters or Cluster edges that have no findspot)
@@ -20,16 +22,18 @@ def shorten_edges(edge_list):
 
 
 def create_graph(edge_list, node_list, remove_low_degree_clusters, filter=[]):
+    '''Function to create a NetworkX chart that serves als the basis for visualisation'''
     network_graph = nx.Graph()
     network_graph.add_edges_from(edge_list)
 
+    # removes coin cluster that are only connected to one findspot since those don't say anything about social networks of that time
     if remove_low_degree_clusters:
         pattern = re.compile(r"^\d{1,4}_[a-zA-Z]$")
         removal = [node for node in network_graph.nodes() if network_graph.degree(node) == 1 and pattern.match(node)]
         network_graph.remove_nodes_from(removal)
 
     attributes = {}
-
+    # add attributes to nodes in NetworkX Graph
     for node in node_list:
         node_id = node[0]
         if node_id in network_graph:
@@ -45,18 +49,19 @@ def create_graph(edge_list, node_list, remove_low_degree_clusters, filter=[]):
                     "findspot_type": node[6],
                 }
     nx.set_node_attributes(network_graph, attributes)
-
+    
+    #  Filters Graph to only contain coins from certain time period if it was requested to do so when calling the function
     if len(filter) > 0:
         removal_filter = [entry for entry, attributes in network_graph.nodes(data=True) if attributes.get("type") == "Cluster" and attributes.get("time_frame") not in filter]
         network_graph.remove_nodes_from(removal_filter)
 
-    # nx.draw(network_graph, with_labels=True)
-    # plt.show()
+    
 
     return network_graph
 
 
 def network_Analysis(graph, save_directory):
+    '''Calculates and saves SNA metrics for edges and nodes'''
 
     degree_centrality = nx.degree_centrality(graph)
 
@@ -110,6 +115,7 @@ def network_Analysis(graph, save_directory):
 
 
 def get_subgraphs(graph, save_directory):
+    '''Searches and saves communities found in a NetworkX chart.'''
 
     directory = "subgraphs"
     full_directory = os.path.join(directory, save_directory)
@@ -146,6 +152,7 @@ def get_subgraphs(graph, save_directory):
 
 
 def export_graph(graph, save_directory):
+    '''Export a NetworkX chart'''
     data1 = nx.node_link_data(graph, edges="edges")
     json_graph = json.dumps(data1, indent=4)
     directory = os.path.join("graph_export", save_directory, "networkx_export.json")
