@@ -14,4 +14,9 @@ If you want to see the similarity rating of two coins in a cluster with our used
 
 ### Results
 To view the results, run the `webserver.py` script and open the web view in your browser at `localhost:5001`.
-In the "Die Data" tab, select which die study data to use for reverse and oberverse.
+In the "Die Data" tab, select which die study data to use for reverse and oberverse. 
+Then start the social network analysis pipeline with the start button. This can take a view seconds to process and is automatically loaded upon finishing.
+
+The two visualisations can be found in the Force Graph and Map View tabs, where you can navigate the graphs by dragging and zoom via the mouse wheel.
+Clicking a node opens the inspector, revealing SNA metrics, coins and XFeat image matching. Additionally, edges to connected findspots are highlighted.
+In the top bar there are filter options for reverse/obverse and the Allen Types of the coins.
